@@ -54,7 +54,7 @@ public class UserServiceTests {
         String password = "password123";
         String firstName = "John";
         String lastName = "Doe";
-        UserService userService1 = new UserService(userRepo, kvitterService);
+        UserService userService1 = new UserService(userRepo);
         when(userRepo.findByEmail(email)).thenReturn(null);
 
         userService1.addUser(email, password, firstName, lastName);

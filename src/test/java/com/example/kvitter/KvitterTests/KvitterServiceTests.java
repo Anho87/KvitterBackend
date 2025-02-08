@@ -1,5 +1,6 @@
 package com.example.kvitter.KvitterTests;
 
+import com.example.kvitter.Hashtag.Hashtag;
 import com.example.kvitter.Kvitter.Kvitter;
 import com.example.kvitter.Kvitter.KvitterRepo;
 import com.example.kvitter.Kvitter.KvitterService;
@@ -11,6 +12,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,11 +47,13 @@ public class KvitterServiceTests {
             .build();
 
     private String message = "Its'a me Mario!";
+    
+    List<Hashtag> hashtags = new ArrayList<>();
 
     @Test
     void addKvitterTest_success() {
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        kvitterService.addKvitter(message, user.getId());
+        kvitterService.addKvitter(message, user.getId(),hashtags);
         ArgumentCaptor<Kvitter> kvitterCaptor = ArgumentCaptor.forClass(Kvitter.class);
         verify(kvitterRepo).save(kvitterCaptor.capture());
         Kvitter capturedKvitter = kvitterCaptor.getValue();
@@ -60,7 +66,7 @@ public class KvitterServiceTests {
         when(userRepo.findById(userId)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            kvitterService.addKvitter(message, userId);
+            kvitterService.addKvitter(message, userId,hashtags);
         });
         assertEquals("User not found", exception.getMessage());
         verify(kvitterRepo, never()).save(any(Kvitter.class));
