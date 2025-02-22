@@ -1,10 +1,10 @@
 package com.example.kvitter;
 
-import com.example.kvitter.Hashtag.Hashtag;
-import com.example.kvitter.Hashtag.HashtagService;
-import com.example.kvitter.Kvitter.KvitterService;
-import com.example.kvitter.User.UserRepo;
-import com.example.kvitter.User.UserService;
+import com.example.kvitter.entities.Hashtag;
+import com.example.kvitter.services.HashtagService;
+import com.example.kvitter.services.KvitterService;
+import com.example.kvitter.repos.UserRepo;
+import com.example.kvitter.services.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -34,21 +34,21 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args)  {
         if (insertDummyData) {
             if (userRepo.count() == 0) {
-                userService.addUser("mario.bros@nintendo.com", "itsame123", "Mario", "Bros");
-                userService.addUser("lara.croft@tombraider.com", "raider456", "Lara", "Croft");
-                userService.addUser("master.chief@halo.com", "spartan117", "Master", "Chief");
-                userService.addUser("kratos.godofwar@ps.com", "blades789", "Kratos", "GodofWar");
-                userService.addUser("link.hero@hyrule.com", "triforce123", "Link", "Hero");
-                userService.addUser("john.wick@continental.com", "puppy456", "John", "Wick");
-                userService.addUser("tony.stark@avengers.com", "ironman789", "Tony", "Stark");
-                userService.addUser("bruce.wayne@gotham.com", "batman123", "Bruce", "Wayne");
-                userService.addUser("cloud.strife@ffvii.com", "buster456", "Cloud", "Strife");
-                userService.addUser("geralt.rivia@witcher.com", "silver789", "Geralt", "Rivia");
-                userService.addUser("arthur.morgan@rdr2.com", "outlaw123", "Arthur", "Morgan");
-                userService.addUser("joel.miller@tlou.com", "guitar456", "Joel", "Miller");
-                userService.addUser("ellie.williams@tlou.com", "clicker789", "Ellie", "Williams");
-                userService.addUser("sarah.connor@terminator.com", "resistance123", "Sarah", "Connor");
-                userService.addUser("neo.matrix@zion.com", "redpill456", "Neo", "Matrix");
+                userService.addUser("mario.bros@nintendo.com", "itsame123", "Mario");
+                userService.addUser("lara.croft@tombraider.com", "raider456", "Lara Croft");
+                userService.addUser("master.chief@halo.com", "spartan117", "Master Chief");
+                userService.addUser("kratos.godofwar@ps.com", "blades789", "Kratos GodofWar");
+                userService.addUser("link.hero@hyrule.com", "triforce123", "Link");
+                userService.addUser("john.wick@continental.com", "puppy456", "John Wick");
+                userService.addUser("tony.stark@avengers.com", "ironman789", "Tony Stark");
+                userService.addUser("bruce.wayne@gotham.com", "batman123", "Bruce Wayne");
+                userService.addUser("cloud.strife@ffvii.com", "buster456", "Cloud Strife");
+                userService.addUser("geralt.rivia@witcher.com", "silver789", "Geralt");
+                userService.addUser("arthur.morgan@rdr2.com", "outlaw123", "Arthur Morgan");
+                userService.addUser("joel.miller@tlou.com", "guitar456", "Joel Miller");
+                userService.addUser("ellie.williams@tlou.com", "clicker789", "Ellie Williams");
+                userService.addUser("sarah.connor@terminator.com", "resistance123", "Sarah Connor");
+                userService.addUser("neo.matrix@zion.com", "redpill456", "Neo");
 
 
                 UUID marioId = userService.getUserByEmail("mario.bros@nintendo.com").getId();

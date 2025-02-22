@@ -1,6 +1,5 @@
-package com.example.kvitter.User;
+package com.example.kvitter.dtos;
 
-import com.example.kvitter.Kvitter.MiniKvitterDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,11 +12,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DetailedUserDTO {
+public class DetailedUserDto {
     private UUID id;
     private String email;
-    private String firstName;
-    private String lastName;
-    private List<MiniKvitterDTO> kvitterList;
+    private String userName;
+    private List<MiniKvitterDto> kvitterList;
+    private String token;
     
 }

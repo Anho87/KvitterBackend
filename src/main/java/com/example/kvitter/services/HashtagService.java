@@ -1,5 +1,7 @@
-package com.example.kvitter.Hashtag;
+package com.example.kvitter.services;
 
+import com.example.kvitter.entities.Hashtag;
+import com.example.kvitter.repos.HashtagRepo;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -1,6 +1,5 @@
-package com.example.kvitter.User;
+package com.example.kvitter.entities;
 
-import com.example.kvitter.Kvitter.Kvitter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,26 +25,19 @@ public class User {
     private String email;
     private String password;
     
-    private String firstName;
-    private String lastName;
+    @Column(unique = true)
+    private String userName;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Kvitter> kvitterList = new ArrayList<>();
+    
+    
 
-    public User(UUID id, String email, String firstName, String lastName, List<Kvitter> kvitterList) {
-        this.id = id;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.kvitterList = kvitterList;
-    }
-
-    public User(String email, String password, String firstName, String lastName, List<Kvitter> kvitterList) {
+    public User(String email, String password, String userName, List<Kvitter> kvitterList) {
         this.email = email;
         this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.userName = userName;
         this.kvitterList = kvitterList;
     }
 }

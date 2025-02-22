@@ -1,10 +1,10 @@
 package com.example.kvitter.UserTests;
 
-import com.example.kvitter.Kvitter.Kvitter;
-import com.example.kvitter.Kvitter.KvitterService;
-import com.example.kvitter.User.User;
-import com.example.kvitter.User.UserRepo;
-import com.example.kvitter.User.UserService;
+import com.example.kvitter.entities.Kvitter;
+import com.example.kvitter.services.KvitterService;
+import com.example.kvitter.entities.User;
+import com.example.kvitter.repos.UserRepo;
+import com.example.kvitter.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,8 +39,7 @@ public class UserServiceTests {
     private UUID userId = UUID.randomUUID();
     private String userEmail = "mario.bros@nintendo.com";
     private String userPassword = "itsame123";
-    private String userFirstName = "Mario";
-    private String userLastName = "Bros";
+    private String userName = "Mario";
     private List<Kvitter> kvitterList = new ArrayList<>();
 
     @BeforeEach
@@ -52,17 +51,15 @@ public class UserServiceTests {
     void addUser_SuccessfulSave() {
         String email = "test@example.com";
         String password = "password123";
-        String firstName = "John";
-        String lastName = "Doe";
+        String userName = "John";
         UserService userService1 = new UserService(userRepo);
         when(userRepo.findByEmail(email)).thenReturn(null);
 
-        userService1.addUser(email, password, firstName, lastName);
+        userService1.addUser(email, password, userName);
         verify(userRepo, times(1)).findByEmail(email);
         verify(userRepo, times(1)).save(argThat(user ->
                 user.getEmail().equals(email) &&
-                        user.getFirstName().equals(firstName) &&
-                        user.getLastName().equals(lastName)
+                        user.getUserName().equals(userName)
         ));
     }
 
@@ -72,13 +69,12 @@ public class UserServiceTests {
         User existingUser = User.builder()
                 .email(email)
                 .password("hashed_password")
-                .firstName("Existing")
-                .lastName("User")
+                .userName("Existing")
                 .build();
 
         lenient().when(userRepo.findByEmail(email)).thenReturn(existingUser);
 
-        userService.addUser(email, "password123", "John", "Doe");
+        userService.addUser(email, "password123", "John Doe");
 
         verify(userRepo, never()).save(any());
     }

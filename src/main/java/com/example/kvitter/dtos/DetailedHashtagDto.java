@@ -1,7 +1,6 @@
-package com.example.kvitter.Hashtag;
+package com.example.kvitter.dtos;
 
 
-import com.example.kvitter.Kvitter.MiniKvitterDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,8 +13,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DetailedHashtagDTO {
+public class DetailedHashtagDto {
     private UUID id;
     private String hashtag;
-    private List<MiniKvitterDTO> kvitters;
+    private List<MiniKvitterDto> kvitters;
 }

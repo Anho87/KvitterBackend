@@ -1,4 +1,4 @@
-package com.example.kvitter.Hashtag;
+package com.example.kvitter.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MiniHashtagDTO {
+public class MiniHashtagDto {
     private UUID id;
     private String hashtag;
 }

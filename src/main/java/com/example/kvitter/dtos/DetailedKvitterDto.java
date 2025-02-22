@@ -1,8 +1,5 @@
-package com.example.kvitter.Kvitter;
+package com.example.kvitter.dtos;
 
-import com.example.kvitter.Hashtag.Hashtag;
-import com.example.kvitter.Hashtag.MiniHashtagDTO;
-import com.example.kvitter.User.MiniUserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,10 +14,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DetailedKvitterDTO {
+public class DetailedKvitterDto {
     private UUID id;
     private String message;
-    private MiniUserDTO miniUserDTO;
+    private MiniUserDto miniUserDTO;
     private LocalDateTime createdDateAndTime;
-    private List<MiniHashtagDTO> hashtags = new ArrayList<>();
+    private List<MiniHashtagDto> hashtags = new ArrayList<>();
 }

@@ -1,8 +1,6 @@
-package com.example.kvitter.Kvitter;
+package com.example.kvitter.entities;
 
 
-import com.example.kvitter.Hashtag.Hashtag;
-import com.example.kvitter.User.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +24,7 @@ public class Kvitter {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     
+    @Column(length = 280)
     private String message;
 
     @ManyToOne

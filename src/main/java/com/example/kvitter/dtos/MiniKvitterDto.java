@@ -1,4 +1,4 @@
-package com.example.kvitter.Kvitter;
+package com.example.kvitter.dtos;
 
 
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MiniKvitterDTO {
+public class MiniKvitterDto {
     
     private UUID id;
     private String message;

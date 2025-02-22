@@ -1,6 +1,7 @@
-package com.example.kvitter.Hashtag;
+package com.example.kvitter.repos;
 
 
+import com.example.kvitter.entities.Hashtag;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

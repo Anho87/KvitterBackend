@@ -1,7 +1,7 @@
-package com.example.kvitter.index;
+package com.example.kvitter.controllers;
 
-import com.example.kvitter.Kvitter.DetailedKvitterDTO;
-import com.example.kvitter.Kvitter.KvitterService;
+import com.example.kvitter.dtos.DetailedKvitterDto;
+import com.example.kvitter.services.KvitterService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,7 +17,7 @@ public class IndexController {
     }
 
     @GetMapping("/index")
-    public List<DetailedKvitterDTO> getAllDetailedKvittersDTO() {
+    public List<DetailedKvitterDto> getAllDetailedKvittersDTO() {
         return kvitterService.getAllDetailedKvittersDTO();
     }
 }

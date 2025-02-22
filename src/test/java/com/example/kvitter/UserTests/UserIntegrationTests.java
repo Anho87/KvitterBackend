@@ -1,10 +1,9 @@
 package com.example.kvitter.UserTests;
 
-import com.example.kvitter.Kvitter.Kvitter;
-import com.example.kvitter.User.User;
-import com.example.kvitter.User.UserRepo;
-import com.example.kvitter.User.UserService;
-import jakarta.transaction.Transactional;
+import com.example.kvitter.entities.Kvitter;
+import com.example.kvitter.entities.User;
+import com.example.kvitter.repos.UserRepo;
+import com.example.kvitter.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +27,12 @@ public class UserIntegrationTests {
     private UUID userId = UUID.randomUUID();
     private String userEmail = "mario.bros@nintendo.com";
     private String userPassword = "itsame123";
-    private String userFirstName = "Mario";
-    private String userLastName = "Bros";
+    private String userName = "Mario";
     private List<Kvitter> kvitterList = new ArrayList<>();
     @BeforeEach
     void setUp() {
         userRepo.deleteAll();
-        User user = new User(userEmail, userPassword, userFirstName, userLastName, kvitterList);
+        User user = new User(userEmail, userPassword, userName, kvitterList);
         userRepo.save(user);
     }
 

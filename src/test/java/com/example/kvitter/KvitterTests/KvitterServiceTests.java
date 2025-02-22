@@ -1,11 +1,11 @@
 package com.example.kvitter.KvitterTests;
 
-import com.example.kvitter.Hashtag.Hashtag;
-import com.example.kvitter.Kvitter.Kvitter;
-import com.example.kvitter.Kvitter.KvitterRepo;
-import com.example.kvitter.Kvitter.KvitterService;
-import com.example.kvitter.User.User;
-import com.example.kvitter.User.UserRepo;
+import com.example.kvitter.entities.Hashtag;
+import com.example.kvitter.entities.Kvitter;
+import com.example.kvitter.repos.KvitterRepo;
+import com.example.kvitter.services.KvitterService;
+import com.example.kvitter.entities.User;
+import com.example.kvitter.repos.UserRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -36,14 +36,12 @@ public class KvitterServiceTests {
     private UUID userId = UUID.randomUUID();
     private String userEmail = "mario.bros@nintendo.com";
     private String userPassword = "itsame123";
-    private String userFirstName = "Mario";
-    private String userLastName = "Bros";
+    private String userName = "Mario";
     private User user = User.builder()
             .id(userId)
             .email(userEmail)
             .password(userPassword)
-            .firstName(userFirstName)
-            .lastName(userLastName)
+            .userName(userName)
             .build();
 
     private String message = "Its'a me Mario!";

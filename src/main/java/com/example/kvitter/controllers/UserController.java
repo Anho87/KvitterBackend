@@ -1,6 +1,8 @@
-package com.example.kvitter.User;
+package com.example.kvitter.controllers;
 
 
+import com.example.kvitter.dtos.DetailedUserDto;
+import com.example.kvitter.services.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +16,7 @@ public class UserController {
         this.userService = userService;
     }
     @GetMapping("/user")
-    public DetailedUserDTO getUserWithEmail(@RequestParam String email){
+    public DetailedUserDto getUserWithEmail(@RequestParam String email){
         return userService.getDetailedUserDTOByEmail(email);
     }
 }

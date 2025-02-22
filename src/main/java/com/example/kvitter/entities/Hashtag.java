@@ -1,6 +1,6 @@
-package com.example.kvitter.Hashtag;
+package com.example.kvitter.entities;
 
-import com.example.kvitter.Kvitter.Kvitter;
+import com.example.kvitter.entities.Kvitter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
