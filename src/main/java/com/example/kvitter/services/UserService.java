@@ -11,7 +11,6 @@ import com.example.kvitter.mappers.UserMapper;
 import com.example.kvitter.repos.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +33,7 @@ public class UserService {
         
         if(passwordEncoder.matches(CharBuffer.wrap(credentialsDTO.password()),
                 user.getPassword())){
-            return userMapper.detailedUserDTO(user);
+            return userMapper.userToDetailedUserDTO(user);
         }
         throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
     }
@@ -50,7 +49,7 @@ public class UserService {
         
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(signUpDto.password())));
         User savedUser =  userRepo.save(user);
-        return userMapper.detailedUserDTO(savedUser);
+        return userMapper.userToDetailedUserDTO(savedUser);
         
     }
 
@@ -80,7 +79,7 @@ public class UserService {
     public void addUser(String email, String password, String userName) {
         if (checkEmailAlreadyUsed(email)) {
             String hash = passwordEncoder.encode(password);
-            User user = User.builder().email(email).password(hash).userName(userName).build();
+            User user = User.builder().email(email).password(hash).userName(userName.toLowerCase()).build();
             userRepo.save(user);
         }
     }

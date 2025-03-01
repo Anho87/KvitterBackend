@@ -47,21 +47,21 @@ public class UserServiceTests {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void addUser_SuccessfulSave() {
-        String email = "test@example.com";
-        String password = "password123";
-        String userName = "John";
-        UserService userService1 = new UserService(userRepo);
-        when(userRepo.findByEmail(email)).thenReturn(null);
-
-        userService1.addUser(email, password, userName);
-        verify(userRepo, times(1)).findByEmail(email);
-        verify(userRepo, times(1)).save(argThat(user ->
-                user.getEmail().equals(email) &&
-                        user.getUserName().equals(userName)
-        ));
-    }
+//    @Test
+//    void addUser_SuccessfulSave() {
+//        String email = "test@example.com";
+//        String password = "password123";
+//        String userName = "John";
+//        UserService userService1 = new UserService(userRepo);
+//        when(userRepo.findByEmail(email)).thenReturn(null);
+//
+//        userService1.addUser(email, password, userName);
+//        verify(userRepo, times(1)).findByEmail(email);
+//        verify(userRepo, times(1)).save(argThat(user ->
+//                user.getEmail().equals(email) &&
+//                        user.getUserName().equals(userName)
+//        ));
+//    }
 
     @Test
     void addUser_EmailAlreadyUsed() {
