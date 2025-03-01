@@ -5,6 +5,7 @@ import com.example.kvitter.services.KvitterService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -18,6 +19,8 @@ public class IndexController {
 
     @GetMapping("/index")
     public List<DetailedKvitterDto> getAllDetailedKvittersDTO() {
-        return kvitterService.getAllDetailedKvittersDTO();
+        List<DetailedKvitterDto> kvitterList = kvitterService.getAllDetailedKvittersDTO();
+        Collections.reverse(kvitterList);
+        return kvitterList;
     }
 }
