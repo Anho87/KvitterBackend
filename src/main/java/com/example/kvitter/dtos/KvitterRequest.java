@@ -14,5 +14,5 @@ import java.util.List;
 @Builder
 public class KvitterRequest {
     private String message;
-    private List<Hashtag> hashtags;
+    private List<String> hashtags;
 }
