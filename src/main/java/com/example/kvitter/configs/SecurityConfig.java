@@ -36,18 +36,6 @@ public class SecurityConfig {
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
         return http.build();
-        
-//        http
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // Inaktivera CORS (aktivera om behövs)
-//                .csrf(csrf -> csrf.disable())  // Inaktivera CSRF-skydd (om API används)
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/index").permitAll()  // Tillåt åtkomst till "/user"
-//                        .anyRequest().authenticated()  // Alla andra endpoints kräver inloggning
-//                )
-//                .formLogin(form -> form.disable())  // Inaktivera formulärbaserad inloggning
-//                .httpBasic(httpBasic -> httpBasic.disable());  // Inaktivera Basic Auth (om det inte behövs)
-//
-//        return http.build();
     }
 
     @Bean
