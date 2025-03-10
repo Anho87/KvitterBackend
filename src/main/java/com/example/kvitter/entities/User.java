@@ -31,9 +31,7 @@ public class User {
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Kvitter> kvitterList = new ArrayList<>();
-
-
-
+    
 
     public User(String email, String password, String userName, List<Kvitter> kvitterList) {
         this.email = email;

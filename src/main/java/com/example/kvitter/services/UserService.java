@@ -1,5 +1,6 @@
 package com.example.kvitter.services;
 
+import com.example.kvitter.configs.UserAuthProvider;
 import com.example.kvitter.dtos.CredentialsDto;
 import com.example.kvitter.dtos.SignUpDto;
 import com.example.kvitter.entities.Kvitter;
@@ -11,6 +12,7 @@ import com.example.kvitter.mappers.UserMapper;
 import com.example.kvitter.repos.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +35,7 @@ public class UserService {
         
         if(passwordEncoder.matches(CharBuffer.wrap(credentialsDTO.password()),
                 user.getPassword())){
+            userRepo.save(user);
             return userMapper.userToDetailedUserDTO(user);
         }
         throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
@@ -46,29 +49,12 @@ public class UserService {
         }
         
         User user = userMapper.signUpToUser(signUpDto);
-        
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(signUpDto.password())));
         User savedUser =  userRepo.save(user);
         return userMapper.userToDetailedUserDTO(savedUser);
         
     }
-
-    private DetailedUserDto userToUserDTO(User user) {
-        List<MiniKvitterDto> kvitterDTOList = new ArrayList<>();
-        if (user.getKvitterList() != null) {
-            for (Kvitter kvitter : user.getKvitterList()) {
-                MiniKvitterDto kvitterDTO = MiniKvitterDto.builder().id(kvitter.getId()).message(kvitter.getMessage()).createdDateAndTime(kvitter.getCreatedDateAndTime()).build();
-                kvitterDTOList.add(kvitterDTO);
-            }
-        }
-
-        return DetailedUserDto.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .userName(user.getUserName())
-                .kvitterList(kvitterDTOList)
-                .build();
-    }
+    
     
     private Boolean checkEmailAlreadyUsed(String email) {
         User user = userRepo.findByEmail(email);
@@ -89,7 +75,7 @@ public class UserService {
     }
 
     public DetailedUserDto getDetailedUserDTOByEmail(String email) {
-        return userToUserDTO(userRepo.findByEmail(email));
+        return userMapper.userToDetailedUserDTO(userRepo.findByEmail(email));
     }
     
 }

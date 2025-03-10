@@ -40,7 +40,7 @@ public class KvitterController {
             UUID userId = user.getId();
             kvitterService.addKvitter(message,userId,hashtagList);
         }catch (AppException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token", e);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Access Token", e);
         }
     }
 }

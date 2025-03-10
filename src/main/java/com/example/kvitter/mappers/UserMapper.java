@@ -16,6 +16,12 @@ public interface UserMapper {
     @Mapping(source = "kvitterList", target = "kvitterList")
     DetailedUserDto userToDetailedUserDTO(User user);
 
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "email", target = "email")
+    @Mapping(source = "userName", target = "userName")
+    @Mapping(source = "kvitterList", target = "kvitterList")
+    User detailedUserDTOToUser(DetailedUserDto detailedUserDto);
+    
     @Mapping(target = "password", ignore = true)
     User signUpToUser(SignUpDto signUpDto);
 }

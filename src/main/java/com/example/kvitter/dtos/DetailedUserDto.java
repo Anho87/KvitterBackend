@@ -17,6 +17,5 @@ public class DetailedUserDto {
     private String email;
     private String userName;
     private List<MiniKvitterDto> kvitterList;
-    private String token;
     
 }
