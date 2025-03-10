@@ -1,6 +1,5 @@
 package com.example.kvitter.dtos;
 
-import com.example.kvitter.entities.Hashtag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

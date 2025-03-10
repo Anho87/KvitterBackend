@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Component
 public class DataLoader implements CommandLineRunner {
-    
+
     private final UserRepo userRepo;
     private final UserService userService;
     private final KvitterService kvitterService;
@@ -29,9 +29,9 @@ public class DataLoader implements CommandLineRunner {
         this.kvitterService = kvitterService;
         this.hashtagService = hashtagService;
     }
-    
+
     @Override
-    public void run(String... args)  {
+    public void run(String... args) {
         if (insertDummyData) {
             if (userRepo.count() == 0) {
                 userService.addUser("mario.bros@nintendo.com", "itsame123", "Mario");
@@ -85,10 +85,9 @@ public class DataLoader implements CommandLineRunner {
                 Hashtag hashtag15 = hashtagService.addHashTag("Tired");
 
 
-
                 kvitterService.addKvitter("Just defeated Bowser again. It's-a me, Mario! 🍄", marioId, Arrays.asList(hashtag1, hashtag0));
                 kvitterService.addKvitter("Saved the Mushroom Kingdom once again! Now, time for spaghetti. 🍝", marioId, Arrays.asList(hashtag1, hashtag15));
-                
+
                 kvitterService.addKvitter("Raiding tombs isn't easy, but someone's gotta do it. 💎", laraId, Arrays.asList(hashtag2, hashtag0));
                 kvitterService.addKvitter("Found another ancient artifact. Now, what does this one do? 🗺️", laraId, Arrays.asList(hashtag2, hashtag15));
 
@@ -130,10 +129,9 @@ public class DataLoader implements CommandLineRunner {
 
                 kvitterService.addKvitter("I chose the red pill. No going back now. 🔴", neoMatrixId, Arrays.asList(hashtag14, hashtag1));
                 kvitterService.addKvitter("The Matrix has glitches, but so do I. Stay sharp. ⚙️", neoMatrixId, Arrays.asList(hashtag14, hashtag15));
-                
+
+                System.out.println("Dummy data inserted.");
             }
-            System.out.println("Dummy data inserted.");
-        } else {
             System.out.println("Dummy data insertion skipped.");
         }
     }

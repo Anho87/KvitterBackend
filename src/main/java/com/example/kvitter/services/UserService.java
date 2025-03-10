@@ -1,10 +1,7 @@
 package com.example.kvitter.services;
 
-import com.example.kvitter.configs.UserAuthProvider;
 import com.example.kvitter.dtos.CredentialsDto;
 import com.example.kvitter.dtos.SignUpDto;
-import com.example.kvitter.entities.Kvitter;
-import com.example.kvitter.dtos.MiniKvitterDto;
 import com.example.kvitter.dtos.DetailedUserDto;
 import com.example.kvitter.entities.User;
 import com.example.kvitter.exceptions.AppException;
@@ -17,8 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service

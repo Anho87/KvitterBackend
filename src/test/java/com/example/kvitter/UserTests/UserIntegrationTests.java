@@ -24,11 +24,11 @@ public class UserIntegrationTests {
     @Autowired
     private UserService userService;
 
-    private UUID userId = UUID.randomUUID();
-    private String userEmail = "mario.bros@nintendo.com";
-    private String userPassword = "itsame123";
-    private String userName = "Mario";
-    private List<Kvitter> kvitterList = new ArrayList<>();
+    private final UUID userId = UUID.randomUUID();
+    private final String userEmail = "mario.bros@nintendo.com";
+    private final String userPassword = "itsame123";
+    private final String userName = "Mario";
+    private final List<Kvitter> kvitterList = new ArrayList<>();
     @BeforeEach
     void setUp() {
         userRepo.deleteAll();

@@ -33,18 +33,18 @@ public class KvitterServiceTests {
     @InjectMocks
     private KvitterService kvitterService;
 
-    private UUID userId = UUID.randomUUID();
-    private String userEmail = "mario.bros@nintendo.com";
-    private String userPassword = "itsame123";
-    private String userName = "Mario";
-    private User user = User.builder()
+    private final UUID userId = UUID.randomUUID();
+    private final String userEmail = "mario.bros@nintendo.com";
+    private final String userPassword = "itsame123";
+    private final String userName = "Mario";
+    private final User user = User.builder()
             .id(userId)
             .email(userEmail)
             .password(userPassword)
             .userName(userName)
             .build();
 
-    private String message = "Its'a me Mario!";
+    private final String message = "Its'a me Mario!";
     
     List<Hashtag> hashtags = new ArrayList<>();
 
