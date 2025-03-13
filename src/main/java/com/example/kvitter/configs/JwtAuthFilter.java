@@ -22,7 +22,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
         
-        if (path.equals("/login") || path.equals("/register") || path.equals("/refresh-token")) {
+        if (path.equals("/login") || path.equals("/register") || path.equals("/refresh-token")|| path.equals("/logout")) {
             filterChain.doFilter(request, response);
             return;
         }

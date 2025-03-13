@@ -29,7 +29,7 @@ public class RefreshTokenService {
     private final UserMapper userMapper;
 
 
-    public String createRefreshToken(DetailedUserDto detailedUserDto) {
+    public RefreshToken createRefreshToken(DetailedUserDto detailedUserDto) {
         removeAllUserTokens(userMapper.detailedUserDTOToUser(detailedUserDto).getId());
         User user = userMapper.detailedUserDTOToUser(detailedUserDto);
         RefreshToken refreshToken = new RefreshToken();
@@ -38,7 +38,7 @@ public class RefreshTokenService {
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
         refreshToken.setRevoked(false);
         refreshTokenRepo.save(refreshToken);
-        return refreshToken.getToken();
+        return refreshToken;
     }
 
     public RefreshToken verifyRefreshToken(String token) {
@@ -66,7 +66,6 @@ public class RefreshTokenService {
     }
 
     public void removeAllUserTokens(UUID userId) {
-        System.out.println("USERID " + userId);
         refreshTokenRepo.deleteByUserId(userId);
     }
 
