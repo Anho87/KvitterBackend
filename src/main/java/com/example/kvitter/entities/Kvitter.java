@@ -33,7 +33,7 @@ public class Kvitter {
     
     private LocalDateTime createdDateAndTime;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "kvitter_hashtags",
             joinColumns = @JoinColumn(name = "kvitter_id"),

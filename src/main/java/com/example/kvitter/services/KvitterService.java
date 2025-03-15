@@ -9,6 +9,8 @@ import com.example.kvitter.dtos.MiniKvitterDto;
 import com.example.kvitter.dtos.MiniUserDto;
 import com.example.kvitter.entities.User;
 import com.example.kvitter.repos.UserRepo;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class KvitterService {
     private final KvitterRepo kvitterRepo;
     private final UserRepo userRepo;
@@ -48,6 +51,16 @@ public class KvitterService {
         User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
         Kvitter kvitter = Kvitter.builder().message(message).user(user).createdDateAndTime(localDateTime).hashtags(hashtags).build();
         kvitterRepo.save(kvitter);
+    }
+    
+    public void removeKvitter(String id){
+        UUID uuid = UUID.fromString(id);
+        Kvitter kvitter = kvitterRepo.findById(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("Kvitter not found"));
+        for (Hashtag hashtag : kvitter.getHashtags()) {
+            hashtag.getKvitters().remove(kvitter); 
+        }
+        kvitterRepo.deleteKvitterById(uuid);
     }
 
     private MiniKvitterDto kvitterToMiniKvitterDTO(Kvitter kvitter) {
