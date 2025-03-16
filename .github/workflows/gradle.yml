@@ -22,15 +22,15 @@ jobs:
       - uses: mr-smithers-excellent/docker-build-push@v6
         name: Build & push Docker image
         with:
-          image: anho87/mtgcarddatabase
+          image: anho87/kvitterbackend
           tags: latest
           registry: docker.io
           dockerfile: Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Deploy to production
-        uses: johnbeynon/render-deploy-action@v0.0.8
-        with:
-          service-id: ${[ secrets.MY_RENDER_SERVICE_ID ]}
-          api-key: ${[ secrets.MY_RENDER_API_KEY ]}
+#      - name: Deploy to production
+#        uses: johnbeynon/render-deploy-action@v0.0.8
+#        with:
+#          service-id: ${[ secrets.MY_RENDER_SERVICE_ID ]}
+#          api-key: ${[ secrets.MY_RENDER_API_KEY ]}
