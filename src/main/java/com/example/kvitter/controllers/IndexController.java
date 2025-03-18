@@ -17,6 +17,7 @@ public class IndexController {
         this.kvitterService = kvitterService;
     }
 
+    //TODO make dynamic and move to kvittercontroller
     @GetMapping("/index")
     public List<DetailedKvitterDto> getAllDetailedKvittersDTO() {
         List<DetailedKvitterDto> kvitterList = kvitterService.getAllDetailedKvittersDTO();
