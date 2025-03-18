@@ -18,4 +18,10 @@ public class DetailedUserDto {
     private String userName;
     private List<MiniKvitterDto> kvitterList;
     
+    public DetailedUserDto(String userName, String email){
+        this.userName = userName;
+        this.email = email;
+        
+    }
+    
 }

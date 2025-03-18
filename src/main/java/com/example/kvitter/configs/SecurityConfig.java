@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests ->
                         requests
                                 .requestMatchers(HttpMethod.POST, "/login", "/register", "/refresh-token","/logout").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/startPageKvitterList").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))

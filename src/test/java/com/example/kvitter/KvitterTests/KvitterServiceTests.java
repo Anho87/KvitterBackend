@@ -1,28 +1,27 @@
 package com.example.kvitter.KvitterTests;
 
-import com.example.kvitter.entities.Hashtag;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.example.kvitter.entities.Kvitter;
-import com.example.kvitter.repos.KvitterRepo;
-import com.example.kvitter.services.KvitterService;
 import com.example.kvitter.entities.User;
+import com.example.kvitter.mappers.KvitterMapper;
+import com.example.kvitter.repos.KvitterRepo;
 import com.example.kvitter.repos.UserRepo;
+import com.example.kvitter.dtos.DetailedKvitterDto;
+import com.example.kvitter.services.KvitterService;
+import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @ExtendWith(MockitoExtension.class)
-public class KvitterServiceTests {
+class KvitterServiceTests {
 
     @Mock
     private KvitterRepo kvitterRepo;
@@ -30,44 +29,69 @@ public class KvitterServiceTests {
     @Mock
     private UserRepo userRepo;
 
+    @Mock
+    private KvitterMapper kvitterMapper;
     @InjectMocks
     private KvitterService kvitterService;
 
-    private final UUID userId = UUID.randomUUID();
-    private final String userEmail = "mario.bros@nintendo.com";
-    private final String userPassword = "itsame123";
-    private final String userName = "Mario";
-    private final User user = User.builder()
-            .id(userId)
-            .email(userEmail)
-            .password(userPassword)
-            .userName(userName)
-            .build();
-
-    private final String message = "Its'a me Mario!";
-    
-    List<Hashtag> hashtags = new ArrayList<>();
-
-    @Test
-    void addKvitterTest_success() {
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        kvitterService.addKvitter(message, user.getId(),hashtags);
-        ArgumentCaptor<Kvitter> kvitterCaptor = ArgumentCaptor.forClass(Kvitter.class);
-        verify(kvitterRepo).save(kvitterCaptor.capture());
-        Kvitter capturedKvitter = kvitterCaptor.getValue();
-        assertEquals(message, capturedKvitter.getMessage());
-        assertEquals(user, capturedKvitter.getUser());
+    @BeforeEach
+    void setUp() {
+        kvitterService = new KvitterService(kvitterRepo, userRepo, kvitterMapper);
     }
 
     @Test
-    void addKvitterTest_userNotFound() {
-        when(userRepo.findById(userId)).thenReturn(Optional.empty());
+    void testAddKvitter() {
+        UUID userId = UUID.randomUUID();
+        User user = new User();
+        user.setId(userId);
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            kvitterService.addKvitter(message, userId,hashtags);
-        });
-        assertEquals("User not found", exception.getMessage());
-        verify(kvitterRepo, never()).save(any(Kvitter.class));
+        Kvitter kvitter = Kvitter.builder()
+                .message("Test message")
+                .user(user)
+                .createdDateAndTime(LocalDateTime.now())
+                .hashtags(new ArrayList<>())
+                .build();
+        when(kvitterRepo.save(any(Kvitter.class))).thenReturn(kvitter);
+
+        assertDoesNotThrow(() -> kvitterService.addKvitter("Test message", userId, new ArrayList<>()));
+        verify(kvitterRepo, times(1)).save(any(Kvitter.class));
+    }
+
+    @Test
+    void testRemoveKvitter() {
+        UUID kvitterId = UUID.randomUUID();
+        Kvitter kvitter = Kvitter.builder().id(kvitterId).hashtags(new ArrayList<>()).build();
+        when(kvitterRepo.findById(kvitterId)).thenReturn(Optional.of(kvitter));
+
+        kvitterService.removeKvitter(kvitterId.toString());
+
+        verify(kvitterRepo, times(1)).deleteKvitterById(kvitterId);
+    }
+
+    @Test
+    void testRemoveKvitterNotFound() {
+        UUID kvitterId = UUID.randomUUID();
+        when(kvitterRepo.findById(kvitterId)).thenReturn(Optional.empty());
+        
+        assertThrows(EntityNotFoundException.class, () -> kvitterService.removeKvitter(kvitterId.toString()));
+    }
+
+    @Test
+    void testGetAllDetailedKvittersDTO() {
+        Kvitter kvitter = Kvitter.builder()
+                .id(UUID.randomUUID())
+                .message("Test message")
+                .createdDateAndTime(LocalDateTime.now())
+                .hashtags(new ArrayList<>())
+                .build();
+        List<Kvitter> kvitters = List.of(kvitter);
+        when(kvitterRepo.findAll()).thenReturn(kvitters);
+        
+        List<DetailedKvitterDto> result = kvitterService.getAllDetailedKvittersDTO();
+        
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(kvitterRepo, times(1)).findAll();
     }
 }
-

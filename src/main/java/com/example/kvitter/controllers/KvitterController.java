@@ -1,6 +1,7 @@
 package com.example.kvitter.controllers;
 
 import com.example.kvitter.configs.UserAuthProvider;
+import com.example.kvitter.dtos.DetailedKvitterDto;
 import com.example.kvitter.dtos.DetailedUserDto;
 import com.example.kvitter.dtos.KvitterRequest;
 import com.example.kvitter.dtos.RemoveKvitterRequest;
@@ -13,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,5 +53,10 @@ public class KvitterController {
         } catch (ExpiredTokenException e) {
             throw new ExpiredTokenException("Access token expired", e);
         }
+    }
+
+    @GetMapping("/startPageKvitterList")
+    public List<DetailedKvitterDto> getAllDetailedKvittersDTO() {
+        return kvitterService.getTenRandomDetailedKvitterDTO();
     }
 }

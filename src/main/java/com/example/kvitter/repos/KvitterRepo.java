@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -17,4 +18,7 @@ public interface KvitterRepo extends JpaRepository<Kvitter, UUID> {
     @Modifying
     @Query("DELETE FROM Kvitter k WHERE k.id = :Id")
     void deleteKvitterById(@Param("Id")UUID Id);
+
+    @Query(value = "SELECT * FROM Kvitter LIMIT 10", nativeQuery = true)
+    List<Kvitter> getAnyTenKvitter();
 }
