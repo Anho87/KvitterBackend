@@ -85,50 +85,50 @@ public class DataLoader implements CommandLineRunner {
                 Hashtag hashtag15 = hashtagService.addHashTag("Tired");
 
 
-                kvitterService.addKvitter("Just defeated Bowser again. It's-a me, Mario! 🍄", marioId, Arrays.asList(hashtag1, hashtag0));
-                kvitterService.addKvitter("Saved the Mushroom Kingdom once again! Now, time for spaghetti. 🍝", marioId, Arrays.asList(hashtag1, hashtag15));
+                kvitterService.addKvitter("Just defeated Bowser again. It's-a me, Mario! 🍄", marioId, Arrays.asList(hashtag1, hashtag0),true);
+                kvitterService.addKvitter("Saved the Mushroom Kingdom once again! Now, time for spaghetti. 🍝", marioId, Arrays.asList(hashtag1, hashtag15),false);
 
-                kvitterService.addKvitter("Raiding tombs isn't easy, but someone's gotta do it. 💎", laraId, Arrays.asList(hashtag2, hashtag0));
-                kvitterService.addKvitter("Found another ancient artifact. Now, what does this one do? 🗺️", laraId, Arrays.asList(hashtag2, hashtag15));
+                kvitterService.addKvitter("Raiding tombs isn't easy, but someone's gotta do it. 💎", laraId, Arrays.asList(hashtag2, hashtag0),true);
+                kvitterService.addKvitter("Found another ancient artifact. Now, what does this one do? 🗺️", laraId, Arrays.asList(hashtag2, hashtag15),false);
 
-                kvitterService.addKvitter("Remember: Finish the fight. 🛡️", masterChiefId, Arrays.asList(hashtag3, hashtag0));
-                kvitterService.addKvitter("Cortana, where are you? I need your help... again. 🖥️", masterChiefId, Arrays.asList(hashtag3, hashtag15));
+                kvitterService.addKvitter("Remember: Finish the fight. 🛡️", masterChiefId, Arrays.asList(hashtag3, hashtag0),true);
+                kvitterService.addKvitter("Cortana, where are you? I need your help... again. 🖥️", masterChiefId, Arrays.asList(hashtag3, hashtag15),false);
 
-                kvitterService.addKvitter("Boy, get over here! Another day, another god to slay. ⚔️", kratosId, Arrays.asList(hashtag4, hashtag0));
-                kvitterService.addKvitter("Even gods feel pain. But I’ll keep fighting. 💔", kratosId, Arrays.asList(hashtag4, hashtag15));
+                kvitterService.addKvitter("Boy, get over here! Another day, another god to slay. ⚔️", kratosId, Arrays.asList(hashtag4, hashtag0),true);
+                kvitterService.addKvitter("Even gods feel pain. But I’ll keep fighting. 💔", kratosId, Arrays.asList(hashtag4, hashtag15),false);
 
-                kvitterService.addKvitter("Found the Triforce and saved Zelda... again. 🌟", linkId, Arrays.asList(hashtag5, hashtag0));
-                kvitterService.addKvitter("Hyrule is peaceful... for now. Time to relax with Epona. 🐴", linkId, Arrays.asList(hashtag5, hashtag15));
+                kvitterService.addKvitter("Found the Triforce and saved Zelda... again. 🌟", linkId, Arrays.asList(hashtag5, hashtag0),true);
+                kvitterService.addKvitter("Hyrule is peaceful... for now. Time to relax with Epona. 🐴", linkId, Arrays.asList(hashtag5, hashtag15),false);
 
-                kvitterService.addKvitter("They took my dog. Big mistake. 🐶💥", johnWickId, Arrays.asList(hashtag6, hashtag15));
-                kvitterService.addKvitter("The Continental better not call me again... I need a break. ☕", johnWickId, Arrays.asList(hashtag6, hashtag15));
+                kvitterService.addKvitter("They took my dog. Big mistake. 🐶💥", johnWickId, Arrays.asList(hashtag6, hashtag15),true);
+                kvitterService.addKvitter("The Continental better not call me again... I need a break. ☕", johnWickId, Arrays.asList(hashtag6, hashtag15),false);
 
-                kvitterService.addKvitter("I am Iron Man. 💡", tonyStarkId, Arrays.asList(hashtag7, hashtag0));
-                kvitterService.addKvitter("Upgraded my suit today. Let’s see how this new arc reactor works. ⚡", tonyStarkId, Arrays.asList(hashtag7, hashtag1));
+                kvitterService.addKvitter("I am Iron Man. 💡", tonyStarkId, Arrays.asList(hashtag7, hashtag0),true);
+                kvitterService.addKvitter("Upgraded my suit today. Let’s see how this new arc reactor works. ⚡", tonyStarkId, Arrays.asList(hashtag7, hashtag1),false);
 
-                kvitterService.addKvitter("Tonight, Gotham is safe. 🦇", bruceWayneId, Arrays.asList(hashtag8, hashtag0));
-                kvitterService.addKvitter("Arkham’s criminals are getting smarter. But not smart enough for me. 🕶️", bruceWayneId, Arrays.asList(hashtag8, hashtag15));
+                kvitterService.addKvitter("Tonight, Gotham is safe. 🦇", bruceWayneId, Arrays.asList(hashtag8, hashtag0),true);
+                kvitterService.addKvitter("Arkham’s criminals are getting smarter. But not smart enough for me. 🕶️", bruceWayneId, Arrays.asList(hashtag8, hashtag15),false);
 
-                kvitterService.addKvitter("Avalanche is here to save the planet! 🌍", cloudStrifeId, Arrays.asList(hashtag9, hashtag0));
-                kvitterService.addKvitter("Midgar can’t hold us down. Avalanche is ready to take on Shinra! 💥", cloudStrifeId, Arrays.asList(hashtag9, hashtag15));
+                kvitterService.addKvitter("Avalanche is here to save the planet! 🌍", cloudStrifeId, Arrays.asList(hashtag9, hashtag0),true);
+                kvitterService.addKvitter("Midgar can’t hold us down. Avalanche is ready to take on Shinra! 💥", cloudStrifeId, Arrays.asList(hashtag9, hashtag15),false);
 
-                kvitterService.addKvitter("Witcher for hire. No monsters too big or too small. 🐺", geraltRiviaId, Arrays.asList(hashtag10, hashtag0));
-                kvitterService.addKvitter("The path of the Witcher is a lonely one, but destiny calls. 🐉", geraltRiviaId, Arrays.asList(hashtag10, hashtag5));
+                kvitterService.addKvitter("Witcher for hire. No monsters too big or too small. 🐺", geraltRiviaId, Arrays.asList(hashtag10, hashtag0),true);
+                kvitterService.addKvitter("The path of the Witcher is a lonely one, but destiny calls. 🐉", geraltRiviaId, Arrays.asList(hashtag10, hashtag5),false);
 
-                kvitterService.addKvitter("Sometimes I miss the gang. Miss you, Hosea. 🤠", arthurMorganId, Arrays.asList(hashtag11, hashtag5));
-                kvitterService.addKvitter("Miss the open fields and the sound of horses running wild. 🌾", arthurMorganId, Arrays.asList(hashtag11, hashtag5));
+                kvitterService.addKvitter("Sometimes I miss the gang. Miss you, Hosea. 🤠", arthurMorganId, Arrays.asList(hashtag11, hashtag5),true);
+                kvitterService.addKvitter("Miss the open fields and the sound of horses running wild. 🌾", arthurMorganId, Arrays.asList(hashtag11, hashtag5),false);
 
-                kvitterService.addKvitter("Ellie, it's just you and me now. 🎸", joelMillerId, Arrays.asList(hashtag12, hashtag2));
-                kvitterService.addKvitter("If we’re still breathing, we keep going. That’s all we can do. 🌄", joelMillerId, Arrays.asList(hashtag12, hashtag15));
+                kvitterService.addKvitter("Ellie, it's just you and me now. 🎸", joelMillerId, Arrays.asList(hashtag12, hashtag2),true);
+                kvitterService.addKvitter("If we’re still breathing, we keep going. That’s all we can do. 🌄", joelMillerId, Arrays.asList(hashtag12, hashtag15),false);
 
-                kvitterService.addKvitter("Took out another clicker. Not bad, huh? 🔪", ellieWilliamsId, Arrays.asList(hashtag12, hashtag4));
-                kvitterService.addKvitter("Just learned another song on my guitar. Wanna hear? 🎶", ellieWilliamsId, Arrays.asList(hashtag12, hashtag15));
+                kvitterService.addKvitter("Took out another clicker. Not bad, huh? 🔪", ellieWilliamsId, Arrays.asList(hashtag12, hashtag4),true);
+                kvitterService.addKvitter("Just learned another song on my guitar. Wanna hear? 🎶", ellieWilliamsId, Arrays.asList(hashtag12, hashtag15),false);
 
-                kvitterService.addKvitter("Hasta la vista, baby. 🤖💥", sarahConnorId, Arrays.asList(hashtag13, hashtag7));
-                kvitterService.addKvitter("Fate is not set in stone. Keep fighting for the future. 🔩", sarahConnorId, Arrays.asList(hashtag13, hashtag15));
+                kvitterService.addKvitter("Hasta la vista, baby. 🤖💥", sarahConnorId, Arrays.asList(hashtag13, hashtag7),true);
+                kvitterService.addKvitter("Fate is not set in stone. Keep fighting for the future. 🔩", sarahConnorId, Arrays.asList(hashtag13, hashtag15),false);
 
-                kvitterService.addKvitter("I chose the red pill. No going back now. 🔴", neoMatrixId, Arrays.asList(hashtag14, hashtag1));
-                kvitterService.addKvitter("The Matrix has glitches, but so do I. Stay sharp. ⚙️", neoMatrixId, Arrays.asList(hashtag14, hashtag15));
+                kvitterService.addKvitter("I chose the red pill. No going back now. 🔴", neoMatrixId, Arrays.asList(hashtag14, hashtag1),true);
+                kvitterService.addKvitter("The Matrix has glitches, but so do I. Stay sharp. ⚙️", neoMatrixId, Arrays.asList(hashtag14, hashtag15),false);
 
                 System.out.println("Dummy data inserted.");
             }

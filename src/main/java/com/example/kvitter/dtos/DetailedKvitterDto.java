@@ -1,5 +1,7 @@
 package com.example.kvitter.dtos;
 
+import com.example.kvitter.entities.Like;
+import com.example.kvitter.entities.Reply;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +19,10 @@ import java.util.UUID;
 public class DetailedKvitterDto {
     private UUID id;
     private String message;
-    private MiniUserDto miniUserDTO;
+    private MiniUserDto user;
     private LocalDateTime createdDateAndTime;
     private List<MiniHashtagDto> hashtags = new ArrayList<>();
+    private boolean isPrivate;
+    private List<MiniLikeDTO> likes = new ArrayList<>();
+    private List<MiniReplyDTO> replies = new ArrayList<>();
 }

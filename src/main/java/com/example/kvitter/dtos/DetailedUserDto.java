@@ -17,11 +17,12 @@ public class DetailedUserDto {
     private String email;
     private String userName;
     private List<MiniKvitterDto> kvitterList;
+    private List<MiniLikeDTO> likes;
+    private List<MiniReplyDTO> replies;
     
     public DetailedUserDto(String userName, String email){
         this.userName = userName;
         this.email = email;
-        
     }
     
 }

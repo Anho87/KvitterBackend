@@ -32,26 +32,11 @@ public class KvitterService {
         this.kvitterMapper = kvitterMapper;
     }
 
-//    private DetailedKvitterDto kvitterToDetailedKvitterDTO(Kvitter kvitter) {
-//        MiniUserDto miniUserDTO = new MiniUserDto();
-//        List<MiniHashtagDto> miniHashtagDTOList = new ArrayList<>();
-//        if (kvitter.getUser() != null){
-//            miniUserDTO = MiniUserDto.builder().id(kvitter.getUser().getId()).email(kvitter.getUser().getEmail()).userName(kvitter.getUser().getUserName()).build();
-//        }
-//        if(kvitter.getHashtags() != null){
-//            for (Hashtag hashtag: kvitter.getHashtags()) {
-//                MiniHashtagDto miniHashtagDTO = MiniHashtagDto.builder().id(hashtag.getId()).hashtag(hashtag.getHashtag()).build();
-//                miniHashtagDTOList.add(miniHashtagDTO);
-//            }
-//        }
-//        return DetailedKvitterDto.builder().id(kvitter.getId()).message(kvitter.getMessage()).miniUserDTO(miniUserDTO).createdDateAndTime(kvitter.getCreatedDateAndTime()).hashtags(miniHashtagDTOList).build();
-//    }
-
-    public void addKvitter(String message, UUID id, List<Hashtag> hashtags) {
+    public void addKvitter(String message, UUID id, List<Hashtag> hashtags,Boolean isPrivate) {
         LocalDateTime localDateTime = LocalDateTime.now();
         Optional<User> optionalUser = userRepo.findById(id);
         User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
-        Kvitter kvitter = Kvitter.builder().message(message).user(user).createdDateAndTime(localDateTime).hashtags(hashtags).build();
+        Kvitter kvitter = Kvitter.builder().message(message).user(user).createdDateAndTime(localDateTime).hashtags(hashtags).isPrivate(isPrivate).build();
         kvitterRepo.save(kvitter);
     }
     

@@ -10,14 +10,14 @@ public interface KvitterMapper {
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "message", target = "message")
-    @Mapping(source = "user", target = "miniUserDTO")
+    @Mapping(source = "user", target = "user")
     @Mapping(source = "createdDateAndTime", target = "createdDateAndTime")
     @Mapping(source = "hashtags", target = "hashtags")
     DetailedKvitterDto kvitterToDetailedKvitterDTO(Kvitter kvitter);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "message", target = "message")
-    @Mapping(source = "miniUserDTO", target = "user")
+    @Mapping(source = "user", target = "user")
     @Mapping(source = "createdDateAndTime", target = "createdDateAndTime")
     @Mapping(source = "hashtags", target = "hashtags")
     Kvitter detailedKvitterDTOtoKvitter(DetailedKvitterDto detailedKvitterDto);

@@ -14,4 +14,5 @@ import java.util.List;
 public class KvitterRequest {
     private String message;
     private List<String> hashtags;
+    private boolean isPrivate;
 }

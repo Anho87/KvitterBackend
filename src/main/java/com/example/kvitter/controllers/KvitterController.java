@@ -31,6 +31,7 @@ public class KvitterController {
         try {
             String message = request.getMessage();
             List<String> hashtags = request.getHashtags();
+            boolean isPrivate = request.isPrivate();
             List<Hashtag> hashtagList = new ArrayList<>();
             for (String hashtag : hashtags) {
                 Hashtag hashtagTemp = hashtagService.addHashTag(hashtag);
@@ -39,7 +40,7 @@ public class KvitterController {
             Authentication authentication = userAuthProvider.validateTokenStrongly(token.replace("Bearer ", ""));
             DetailedUserDto user = (DetailedUserDto) authentication.getPrincipal();
             UUID userId = user.getId();
-            kvitterService.addKvitter(message, userId, hashtagList);
+            kvitterService.addKvitter(message, userId, hashtagList,isPrivate);
         } catch (ExpiredTokenException e) {
             throw new ExpiredTokenException("Access token expired", e);
         }

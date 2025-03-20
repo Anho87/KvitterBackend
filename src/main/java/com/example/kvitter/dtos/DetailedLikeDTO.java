@@ -1,23 +1,18 @@
 package com.example.kvitter.dtos;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class MiniKvitterDto {
-    
+public class DetailedLikeDTO {
     private UUID id;
-    private String message;
-    private LocalDateTime createdDateAndTime;
-    private boolean isPrivate;
-   
+    private MiniUserDto user;
+    private MiniKvitterDto kvitter;
 }

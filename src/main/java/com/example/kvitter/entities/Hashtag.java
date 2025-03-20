@@ -24,7 +24,7 @@ public class Hashtag {
 
     private String hashtag;
     
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "kvitter_hashtags",
             joinColumns = @JoinColumn(name = "hashtag_id"),
