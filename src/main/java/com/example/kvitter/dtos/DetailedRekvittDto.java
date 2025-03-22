@@ -11,6 +11,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MiniRetweetDto {
+public class DetailedRekvittDto {
     private UUID id;
+    private MiniUserDto user;
+    private MiniKvitterDto originalKvitter;
 }

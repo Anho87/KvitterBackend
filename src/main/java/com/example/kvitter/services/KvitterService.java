@@ -62,8 +62,8 @@ public class KvitterService {
         User user = userRepo.findByEmail(detailedUserDto.getEmail());
         List<Kvitter> kvitterList;
         List<DetailedKvitterDto> detailedKvitterDtoList = new ArrayList<>();
-        System.out.println("user: " + user.getUserName());
-        System.out.println("user2: " + userName);
+//        System.out.println("user: " + user.getUserName());
+//        System.out.println("user2: " + userName);
         if (userName == null) {
             kvitterList = kvitterRepo.getAllKvitterThatIsPublic(user.getId());
             for (Kvitter kvitter : kvitterList) {

@@ -39,7 +39,7 @@ class KvitterServiceTests {
 
     @BeforeEach
     void setUp() {
-        kvitterService = new KvitterService(kvitterRepo, userRepo, kvitterMapper, userMapper, userAuthProvider);
+        kvitterService = new KvitterService(kvitterRepo, userRepo, kvitterMapper, userAuthProvider);
     }
 
     @Test

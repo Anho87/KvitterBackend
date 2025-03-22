@@ -1,6 +1,5 @@
 package com.example.kvitter.dtos;
 
-import com.example.kvitter.entities.Retweet;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,5 +23,5 @@ public class DetailedKvitterDto {
     private boolean isPrivate;
     private List<MiniLikeDto> likes = new ArrayList<>();
     private List<MiniReplyDto> replies = new ArrayList<>();
-    private List<MiniRetweetDto> retweets = new ArrayList<>();
+    private List<MiniRekvittDto> rekvitts = new ArrayList<>();
 }

@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "retweets")
+@Table(name = "rekvitts")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Retweet {
+public class Rekvitt {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

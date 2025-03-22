@@ -1,7 +1,6 @@
 package com.example.kvitter.entities;
 
 
-import com.example.kvitter.services.KvitterService;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,7 +51,7 @@ public class Kvitter {
     private List<Reply> replies = new ArrayList<>();
 
     @OneToMany(mappedBy = "originalKvitter", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Retweet> retweets = new ArrayList<>();
+    private List<Rekvitt> rekvitts = new ArrayList<>();
 
     public Kvitter(String message, User user, LocalDateTime createdDateAndTime, List<Hashtag> hashtags, boolean isPrivate) {
         this.message = message;

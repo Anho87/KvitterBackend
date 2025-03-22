@@ -22,7 +22,7 @@ public class DetailedUserDto {
     private List<MiniReplyDto> replies;
     private List<MiniUserDto> following = new ArrayList<>();
     private List<MiniUserDto> followers = new ArrayList<>();
-    private List<MiniRetweetDto> retweets = new ArrayList<>();
+    private List<MiniRekvittDto> rekvitts = new ArrayList<>();
     
     public DetailedUserDto(String userName, String email){
         this.userName = userName;

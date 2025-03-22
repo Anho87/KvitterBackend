@@ -50,7 +50,7 @@ public class User {
     private List<User> followers = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Retweet> retweets = new ArrayList<>();
+    private List<Rekvitt> rekvitts = new ArrayList<>();
     
     public User(String email, String password, String userName, List<Kvitter> kvitterList) {
         this.email = email;
