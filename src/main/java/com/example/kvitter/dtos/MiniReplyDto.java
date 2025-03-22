@@ -1,6 +1,5 @@
 package com.example.kvitter.dtos;
 
-import com.example.kvitter.entities.Reply;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MiniReplyDTO {
+public class MiniReplyDto {
     private UUID id;
     private String message;
     private LocalDateTime createdDateAndTime;

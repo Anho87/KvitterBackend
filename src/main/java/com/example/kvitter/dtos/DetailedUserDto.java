@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,8 +18,11 @@ public class DetailedUserDto {
     private String email;
     private String userName;
     private List<MiniKvitterDto> kvitterList;
-    private List<MiniLikeDTO> likes;
-    private List<MiniReplyDTO> replies;
+    private List<MiniLikeDto> likes;
+    private List<MiniReplyDto> replies;
+    private List<MiniUserDto> following = new ArrayList<>();
+    private List<MiniUserDto> followers = new ArrayList<>();
+    private List<MiniRetweetDto> retweets = new ArrayList<>();
     
     public DetailedUserDto(String userName, String email){
         this.userName = userName;

@@ -14,12 +14,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DetailedReplyDTO {
+public class DetailedReplyDto {
     private UUID id;
     private String message;
     private LocalDateTime createdDateAndTime;
     private MiniUserDto user;
     private MiniKvitterDto kvitter;
-    private MiniReplyDTO parentReply;
-    private List<MiniReplyDTO> replies = new ArrayList<>();
+    private MiniReplyDto parentReply;
+    private List<MiniReplyDto> replies = new ArrayList<>();
 }

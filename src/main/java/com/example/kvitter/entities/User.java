@@ -37,6 +37,21 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Reply> replies = new ArrayList<>();
+    
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_following",
+            joinColumns = @JoinColumn(name = "follower_id"), 
+            inverseJoinColumns = @JoinColumn(name = "following_id") 
+    )
+    private List<User> following = new ArrayList<>();
+    
+    @ManyToMany(mappedBy = "following", fetch = FetchType.EAGER)
+    private List<User> followers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Retweet> retweets = new ArrayList<>();
+    
     public User(String email, String password, String userName, List<Kvitter> kvitterList) {
         this.email = email;
         this.password = password;

@@ -1,10 +1,7 @@
 package com.example.kvitter.controllers;
 
 import com.example.kvitter.configs.UserAuthProvider;
-import com.example.kvitter.dtos.DetailedKvitterDto;
-import com.example.kvitter.dtos.DetailedUserDto;
-import com.example.kvitter.dtos.KvitterRequest;
-import com.example.kvitter.dtos.RemoveKvitterRequest;
+import com.example.kvitter.dtos.*;
 import com.example.kvitter.entities.Hashtag;
 import com.example.kvitter.exceptions.ExpiredTokenException;
 import com.example.kvitter.services.HashtagService;
@@ -46,6 +43,14 @@ public class KvitterController {
         }
     }
 
+    //TODO make dynamic 
+    @GetMapping("/kvitterList")
+    public List<DetailedKvitterDto> getDynamicDetailedKvitterDtoList( @RequestParam(required = false) String userName, @RequestHeader("Authorization") String token) {
+        List<DetailedKvitterDto> kvitterList = kvitterService.getFilteredKvitters(userName, token);
+        Collections.reverse(kvitterList);
+        return kvitterList;
+    }
+
     @DeleteMapping("/removeKvitter")
     public void removeKvitter(@RequestBody RemoveKvitterRequest request, @RequestHeader("Authorization") String token) {
         try {
@@ -56,8 +61,8 @@ public class KvitterController {
         }
     }
 
-    @GetMapping("/startPageKvitterList")
-    public List<DetailedKvitterDto> getAllDetailedKvittersDTO() {
-        return kvitterService.getTenRandomDetailedKvitterDTO();
+    @GetMapping("/welcomePageKvitterList")
+    public List<DetailedKvitterDto> getWelcomePageKvitter() {
+        return kvitterService.getTenLatestKvitterThatIsNotPrivate();
     }
 }

@@ -42,7 +42,7 @@ public class Kvitter {
     )
     private List<Hashtag> hashtags = new ArrayList<>();
     
-    private boolean isPrivate;
+    private Boolean isPrivate;
 
 
     @OneToMany(mappedBy = "kvitter", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -51,6 +51,8 @@ public class Kvitter {
     @OneToMany(mappedBy = "kvitter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reply> replies = new ArrayList<>();
 
+    @OneToMany(mappedBy = "originalKvitter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Retweet> retweets = new ArrayList<>();
 
     public Kvitter(String message, User user, LocalDateTime createdDateAndTime, List<Hashtag> hashtags, boolean isPrivate) {
         this.message = message;

@@ -11,6 +11,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MiniLikeDTO {
+public class DetailedLikeDto {
     private UUID id;
+    private MiniUserDto user;
+    private MiniKvitterDto kvitter;
 }

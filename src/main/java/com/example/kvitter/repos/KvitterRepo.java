@@ -18,7 +18,11 @@ public interface KvitterRepo extends JpaRepository<Kvitter, UUID> {
     @Modifying
     @Query("DELETE FROM Kvitter k WHERE k.id = :Id")
     void deleteKvitterById(@Param("Id")UUID Id);
+    
+    @Query(value = "SELECT * FROM Kvitter WHERE is_private = false ORDER BY created_date_and_time DESC LIMIT 10", nativeQuery = true)
+    List<Kvitter> getTenLatestKvitterThatIsNotPrivate();
 
-    @Query(value = "SELECT * FROM Kvitter LIMIT 10", nativeQuery = true)
-    List<Kvitter> getAnyTenKvitter();
+    @Query(value = "SELECT * FROM Kvitter k WHERE k.is_private = false OR k.is_private = true AND k.user_id = :userId", nativeQuery = true)
+    List<Kvitter> getAllKvitterThatIsPublic(@Param("userId") UUID userId);
+
 }

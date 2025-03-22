@@ -1,7 +1,6 @@
 package com.example.kvitter.dtos;
 
-import com.example.kvitter.entities.Like;
-import com.example.kvitter.entities.Reply;
+import com.example.kvitter.entities.Retweet;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +22,7 @@ public class DetailedKvitterDto {
     private LocalDateTime createdDateAndTime;
     private List<MiniHashtagDto> hashtags = new ArrayList<>();
     private boolean isPrivate;
-    private List<MiniLikeDTO> likes = new ArrayList<>();
-    private List<MiniReplyDTO> replies = new ArrayList<>();
+    private List<MiniLikeDto> likes = new ArrayList<>();
+    private List<MiniReplyDto> replies = new ArrayList<>();
+    private List<MiniRetweetDto> retweets = new ArrayList<>();
 }

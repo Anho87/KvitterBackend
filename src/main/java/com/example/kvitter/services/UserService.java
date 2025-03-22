@@ -56,7 +56,7 @@ public class UserService {
         return user == null;
     }
 
-    
+    //TODO skriv test
     public void addUser(String email, String password, String userName) {
         if (checkEmailAlreadyUsed(email)) {
             String hash = passwordEncoder.encode(password);
