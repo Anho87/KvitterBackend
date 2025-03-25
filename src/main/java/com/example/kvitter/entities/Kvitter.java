@@ -48,7 +48,7 @@ public class Kvitter {
     @OneToMany(mappedBy = "kvitter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "kvitter", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "kvitter", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Reply> replies = new ArrayList<>();
 
     @OneToMany(mappedBy = "originalKvitter", cascade = CascadeType.ALL, orphanRemoval = true)

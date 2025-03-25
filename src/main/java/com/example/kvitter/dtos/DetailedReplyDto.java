@@ -21,5 +21,5 @@ public class DetailedReplyDto {
     private MiniUserDto user;
     private MiniKvitterDto kvitter;
     private MiniReplyDto parentReply;
-    private List<MiniReplyDto> replies = new ArrayList<>();
+    private List<DetailedReplyDto> replies = new ArrayList<>();
 }
