@@ -22,6 +22,6 @@ public class DetailedKvitterDto {
     private List<MiniHashtagDto> hashtags = new ArrayList<>();
     private boolean isPrivate;
     private List<MiniLikeDto> likes = new ArrayList<>();
-    private List<MiniReplyDto> replies = new ArrayList<>();
+    private List<DetailedReplyDto> replies = new ArrayList<>();
     private List<MiniRekvittDto> rekvitts = new ArrayList<>();
 }

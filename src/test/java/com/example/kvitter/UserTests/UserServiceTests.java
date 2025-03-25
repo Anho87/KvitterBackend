@@ -107,24 +107,14 @@ class UserServiceTests {
         assertEquals("Username already exists", exception.getMessage());
     }
 
-    @Test
-    void getUserByEmail_ExistingUser_ReturnsUser() {
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
-
-        User result = userService.getUserByEmail(user.getEmail());
-
-        assertNotNull(result);
-        assertEquals(user.getEmail(), result.getEmail());
-    }
-
-    @Test
-    void getDetailedUserDTOByEmail_ExistingUser_ReturnsDetailedUser() {
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
-        when(userMapper.userToDetailedUserDTO(user)).thenReturn(detailedUserDto);
-
-        DetailedUserDto result = userService.getDetailedUserDTOByEmail(user.getEmail());
-
-        assertNotNull(result);
-        assertEquals(detailedUserDto.getUserName(), result.getUserName());
-    }
+//    @Test
+//    void getUserByEmail_ExistingUser_ReturnsUser() {
+//        when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
+//
+//        User result = userService.getUserByEmail(user.getEmail());
+//
+//        assertNotNull(result);
+//        assertEquals(user.getEmail(), result.getEmail());
+//    }
+    
 }

@@ -7,6 +7,8 @@ import org.mapstruct.Mapper;
 
 import org.mapstruct.Mapping;
 
+import java.util.Optional;
+
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
@@ -24,5 +26,12 @@ public interface UserMapper {
     
     @Mapping(target = "password", ignore = true)
     User signUpToUser(SignUpDto signUpDto);
+
+    default User optionalToUser(Optional<User> optionalUser) {
+        return optionalUser.orElse(null); 
+    }
+    default DetailedUserDto optionalToDetailedUserDto(Optional<User> optionalUser) {
+        return optionalUser.map(this::userToDetailedUserDTO).orElse(null);
+    }
 }
 

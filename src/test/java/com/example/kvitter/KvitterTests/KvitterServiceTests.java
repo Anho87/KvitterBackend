@@ -4,11 +4,15 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.kvitter.configs.UserAuthProvider;
+import com.example.kvitter.dtos.DetailedUserDto;
+import com.example.kvitter.entities.Hashtag;
 import com.example.kvitter.entities.Kvitter;
 import com.example.kvitter.entities.User;
 import com.example.kvitter.mappers.KvitterMapper;
+import com.example.kvitter.mappers.UserMapper;
 import com.example.kvitter.repos.KvitterRepo;
 import com.example.kvitter.repos.UserRepo;
+import com.example.kvitter.services.HashtagService;
 import com.example.kvitter.services.KvitterService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,15 +35,18 @@ class KvitterServiceTests {
 
     @Mock
     private KvitterMapper kvitterMapper;
+    
+    @Mock
+    private HashtagService hashtagService;
+    @Mock
+    private UserMapper userMapper;
     @InjectMocks
     private KvitterService kvitterService;
     
-    @Mock
-    private UserAuthProvider userAuthProvider;
 
     @BeforeEach
     void setUp() {
-        kvitterService = new KvitterService(kvitterRepo, userRepo, kvitterMapper, userAuthProvider);
+        kvitterService = new KvitterService(kvitterRepo, userRepo, kvitterMapper,hashtagService,userMapper);
     }
 
     @Test
@@ -48,8 +55,12 @@ class KvitterServiceTests {
         User user = new User();
         user.setId(userId);
         boolean isPrivate = false;
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
 
+        DetailedUserDto detailedUserDto = mock(DetailedUserDto.class);
+        when(detailedUserDto.getId()).thenReturn(userId);
+
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        
         Kvitter kvitter = Kvitter.builder()
                 .message("Test message")
                 .user(user)
@@ -57,11 +68,13 @@ class KvitterServiceTests {
                 .hashtags(new ArrayList<>())
                 .isPrivate(isPrivate)
                 .build();
+
         when(kvitterRepo.save(any(Kvitter.class))).thenReturn(kvitter);
 
-        assertDoesNotThrow(() -> kvitterService.addKvitter("Test message", userId, new ArrayList<>(), isPrivate));
+        assertDoesNotThrow(() -> kvitterService.addKvitter("Test message", new ArrayList<>(), isPrivate, detailedUserDto));
         verify(kvitterRepo, times(1)).save(any(Kvitter.class));
     }
+
 
     @Test
     void testRemoveKvitter() {

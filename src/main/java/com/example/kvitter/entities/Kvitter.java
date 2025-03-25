@@ -40,7 +40,8 @@ public class Kvitter {
             inverseJoinColumns = @JoinColumn(name = "hashtag_id")
     )
     private List<Hashtag> hashtags = new ArrayList<>();
-    
+
+    @JoinColumn(name = "is_private", nullable = false)
     private Boolean isPrivate;
 
 

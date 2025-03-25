@@ -58,4 +58,10 @@ public class User {
         this.userName = userName;
         this.kvitterList = kvitterList;
     }
+
+    public User(String email, String userName, String password) {
+        this.email = email;
+        this.userName = userName;
+        this.password = password;
+    }
 }

@@ -7,12 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class KvitterRequest {
-    private String message;
-    private List<String> hashtags;
-    private boolean isPrivate;
+
+public record KvitterRequest(String message,List<String> hashtags ,Boolean isPrivate) {
+   
 }

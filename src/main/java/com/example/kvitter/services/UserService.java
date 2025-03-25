@@ -1,5 +1,6 @@
 package com.example.kvitter.services;
 
+import com.example.kvitter.configs.UserAuthProvider;
 import com.example.kvitter.dtos.CredentialsDto;
 import com.example.kvitter.dtos.SignUpDto;
 import com.example.kvitter.dtos.DetailedUserDto;
@@ -10,11 +11,13 @@ import com.example.kvitter.repos.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -38,9 +41,13 @@ public class UserService {
     
     public DetailedUserDto register(SignUpDto signUpDto){
         Optional<User> oUser = userRepo.findByUserName(signUpDto.userName());
+        User checkMail = userRepo.findByEmail(signUpDto.email());
         
         if (oUser.isPresent()){
             throw new AppException("Username already exists", HttpStatus.BAD_REQUEST);
+        }
+        if (checkMail != null){
+            throw new AppException("Email already exists", HttpStatus.BAD_REQUEST);
         }
         
         User user = userMapper.signUpToUser(signUpDto);
@@ -50,27 +57,17 @@ public class UserService {
         
     }
     
-    
-    private Boolean checkEmailAlreadyUsed(String email) {
-        User user = userRepo.findByEmail(email);
-        return user == null;
-    }
-
-    //TODO skriv test
-    public void addUser(String email, String password, String userName) {
-        if (checkEmailAlreadyUsed(email)) {
-            String hash = passwordEncoder.encode(password);
-            User user = User.builder().email(email).password(hash).userName(userName.toLowerCase()).build();
-            userRepo.save(user);
+    //TODO make test
+    public void followUser(String email, DetailedUserDto detailedUserDto){
+        User toBeFollowedUser = userRepo.findByEmail(email);
+        User wantToFollowUser = userRepo.findByEmail(detailedUserDto.getEmail());
+        boolean userExists = wantToFollowUser.getFollowing().stream().anyMatch(user -> user.getId() == toBeFollowedUser.getId());
+        if(!userExists){
+            wantToFollowUser.getFollowing().add(toBeFollowedUser);
+            userRepo.save(wantToFollowUser);
+        }else{
+            throw new AppException("Already following that user", HttpStatus.BAD_REQUEST);
         }
-    }
-    
-    public User getUserByEmail(String email) {
-        return userRepo.findByEmail(email);
-    }
-
-    public DetailedUserDto getDetailedUserDTOByEmail(String email) {
-        return userMapper.userToDetailedUserDTO(userRepo.findByEmail(email));
     }
     
 }

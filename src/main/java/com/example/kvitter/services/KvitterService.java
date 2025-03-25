@@ -1,6 +1,5 @@
 package com.example.kvitter.services;
 
-import com.example.kvitter.configs.UserAuthProvider;
 import com.example.kvitter.dtos.DetailedUserDto;
 import com.example.kvitter.entities.Hashtag;
 import com.example.kvitter.dtos.DetailedKvitterDto;
@@ -12,35 +11,36 @@ import com.example.kvitter.entities.User;
 import com.example.kvitter.repos.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.security.core.Authentication;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class KvitterService {
     private final KvitterRepo kvitterRepo;
     private final UserRepo userRepo;
     private final KvitterMapper kvitterMapper;
-    private final UserAuthProvider userAuthProvider;
+    private final HashtagService hashtagService;
+    private final UserMapper userMapper;
 
-    public KvitterService(KvitterRepo kvitterRepo, UserRepo userRepo, KvitterMapper kvitterMapper, UserAuthProvider userAuthProvider) {
-        this.kvitterRepo = kvitterRepo;
-        this.userRepo = userRepo;
-        this.kvitterMapper = kvitterMapper;
-        this.userAuthProvider = userAuthProvider;
-    }
-
-    public void addKvitter(String message, UUID id, List<Hashtag> hashtags, Boolean isPrivate) {
+    
+    public void addKvitter(String message, List<String> hashtags, Boolean isPrivate, DetailedUserDto detailedUserDto) {
+        System.out.println(isPrivate);
+        List<Hashtag> hashtagList = new ArrayList<>();
+        for (String hashtag : hashtags) {
+            Hashtag tempHashtag = hashtagService.addHashTag(hashtag);
+            hashtagList.add(tempHashtag);
+        }
+        UUID userId = detailedUserDto.getId();
         LocalDateTime localDateTime = LocalDateTime.now();
-        Optional<User> optionalUser = userRepo.findById(id);
+        Optional<User> optionalUser = userRepo.findById(userId);
         User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
-        Kvitter kvitter = Kvitter.builder().message(message).user(user).createdDateAndTime(localDateTime).hashtags(hashtags).isPrivate(isPrivate).build();
+        Kvitter kvitter = Kvitter.builder().message(message).user(user).createdDateAndTime(localDateTime).hashtags(hashtagList).isPrivate(isPrivate).build();
         kvitterRepo.save(kvitter);
     }
 
@@ -55,32 +55,32 @@ public class KvitterService {
     }
 
 
-    //TODO skriv test
-    public List<DetailedKvitterDto> getFilteredKvitters(String userName, String token) {
-        Authentication authentication = userAuthProvider.validateToken(token.replace("Bearer ", ""));
-        DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
+    //TODO skriv test dela på denna så det är 3st för lättare testning
+    public List<DetailedKvitterDto> getFilteredKvitters(String userName, DetailedUserDto detailedUserDto) {
         User user = userRepo.findByEmail(detailedUserDto.getEmail());
-        List<Kvitter> kvitterList;
-        List<DetailedKvitterDto> detailedKvitterDtoList = new ArrayList<>();
-//        System.out.println("user: " + user.getUserName());
-//        System.out.println("user2: " + userName);
-        if (userName == null) {
-            kvitterList = kvitterRepo.getAllKvitterThatIsPublic(user.getId());
-            for (Kvitter kvitter : kvitterList) {
-                detailedKvitterDtoList.add(kvitterMapper.kvitterToDetailedKvitterDTO(kvitter));
-            }
+        Optional<User> optionalUser = userRepo.findByUserName(userName);
+        User targetUser = userMapper.optionalToUser(optionalUser);
+        List<DetailedKvitterDto> detailedKvitterDtoList;
+        if (optionalUser.isEmpty()) {
+            System.out.println("Fetching all kvitters, including private ones for followers of logged-in user");
+            detailedKvitterDtoList = mapToDtoList(kvitterRepo.getDynamicKvitterList(user.getId()));
+        }else if(targetUser.getId() != user.getId()){
+            System.out.println("Fetching kvitters for target user by logged-in user");
+            detailedKvitterDtoList = mapToDtoList(kvitterRepo.findAllByTargetUser(targetUser.getId(),user.getId()));
+        }else {
+            System.out.println("Fetching kvitters for logged-in user");
+            detailedKvitterDtoList = mapToDtoList(kvitterRepo.findAllByLoggedInUser(user.getId()));
         }
         return detailedKvitterDtoList;
+    }
+    
+    private List<DetailedKvitterDto> mapToDtoList(List<Kvitter> kvitterList){
+        return kvitterList.stream().map(kvitterMapper::kvitterToDetailedKvitterDTO).collect(Collectors.toList());
     }
 
 
     //TODO skriv test
     public List<DetailedKvitterDto> getTenLatestKvitterThatIsNotPrivate() {
-        List<Kvitter> kvitterList = kvitterRepo.getTenLatestKvitterThatIsNotPrivate();
-        List<DetailedKvitterDto> detailedKvitterDTOSList = new ArrayList<>();
-        for (Kvitter kvitter : kvitterList) {
-            detailedKvitterDTOSList.add(kvitterMapper.kvitterToDetailedKvitterDTO(kvitter));
-        }
-        return detailedKvitterDTOSList;
+        return mapToDtoList(kvitterRepo.getTenLatestKvitterThatIsNotPrivate());
     }
 }

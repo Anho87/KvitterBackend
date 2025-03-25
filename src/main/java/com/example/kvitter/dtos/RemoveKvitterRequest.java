@@ -6,10 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class RemoveKvitterRequest {
-    private String id;
+
+public record RemoveKvitterRequest(String id) {
+  
 }
