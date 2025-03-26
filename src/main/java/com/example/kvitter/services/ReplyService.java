@@ -24,28 +24,30 @@ public class ReplyService {
     private final ReplyRepo replyRepo;
     private final UserRepo userRepo;
     private final KvitterRepo kvitterRepo;
-    
-    
+
+
     //TODO skriv test
-    public void addReply(String message, UUID kvitterId, UUID parentReplyId, DetailedUserDto detailedUserDto){
+    public void addReply(String message, UUID kvitterId, UUID parentReplyId, DetailedUserDto detailedUserDto) {
         LocalDateTime localDateTime = LocalDateTime.now();
         User user = userRepo.findById(detailedUserDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        
-        Kvitter kvitter = kvitterRepo.findById(kvitterId)
-                .orElseThrow(() -> new EntityNotFoundException("Kvitter not found"));
+
         Reply reply = Reply.builder()
                 .message(message)
                 .createdDateAndTime(localDateTime)
                 .user(user)
-                .kvitter(kvitter)
                 .build();
-        
+
         if (parentReplyId != null) {
             Reply parentReply = replyRepo.findById(parentReplyId)
                     .orElseThrow(() -> new EntityNotFoundException("Parent reply not found"));
             reply.setParentReply(parentReply);
+        } else {
+            Kvitter kvitter = kvitterRepo.findById(kvitterId)
+                    .orElseThrow(() -> new EntityNotFoundException("Kvitter not found"));
+            reply.setKvitter(kvitter);
         }
+
         replyRepo.save(reply);
     }
 
@@ -54,6 +56,11 @@ public class ReplyService {
         UUID uuid = UUID.fromString(id);
         Reply reply = replyRepo.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Reply not found"));
-        replyRepo.deleteReplyById(reply.getId());
+        if (reply.getReplies().isEmpty()) {
+            replyRepo.deleteReplyById(reply.getId());
+        } else {
+            reply.setMessage("Deleted...");
+            replyRepo.save(reply);
+        }
     }
 }

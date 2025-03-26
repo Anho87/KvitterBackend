@@ -1,9 +1,11 @@
 package com.example.kvitter.services;
 
+import com.example.kvitter.dtos.DetailedReplyDto;
 import com.example.kvitter.dtos.DetailedUserDto;
 import com.example.kvitter.entities.Hashtag;
 import com.example.kvitter.dtos.DetailedKvitterDto;
 import com.example.kvitter.entities.Kvitter;
+import com.example.kvitter.entities.Reply;
 import com.example.kvitter.mappers.KvitterMapper;
 import com.example.kvitter.mappers.UserMapper;
 import com.example.kvitter.repos.KvitterRepo;

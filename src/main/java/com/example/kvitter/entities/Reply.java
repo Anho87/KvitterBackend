@@ -35,7 +35,7 @@ public class Reply {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "kvitter_id", nullable = false)
+    @JoinColumn(name = "kvitter_id")
     private Kvitter kvitter;
 
     @ManyToOne(fetch = FetchType.LAZY)
