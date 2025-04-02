@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,13 +30,13 @@ public class ReplyService {
 
     //TODO skriv test
     public void addReply(String message, UUID kvitterId, UUID parentReplyId, DetailedUserDto detailedUserDto) {
-        LocalDateTime localDateTime = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Stockholm"));
         User user = userRepo.findById(detailedUserDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Reply reply = Reply.builder()
                 .message(message)
-                .createdDateAndTime(localDateTime)
+                .createdDateAndTime(now.toLocalDateTime())
                 .user(user)
                 .build();
 

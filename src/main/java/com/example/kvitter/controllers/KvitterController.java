@@ -31,7 +31,7 @@ public class KvitterController {
         }
     }
 
-    //TODO make dynamic 
+ 
     @GetMapping("/kvitterList")
     public List<DetailedKvitterDto> getDynamicDetailedKvitterDtoList( @RequestParam(required = false) String userName, @RequestHeader("Authorization") String token) {
         Authentication authentication = userAuthProvider.validateToken(token.replace("Bearer ", ""));

@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,10 +41,10 @@ public class KvitterService {
             hashtagList.add(tempHashtag);
         }
         UUID userId = detailedUserDto.getId();
-        LocalDateTime localDateTime = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Stockholm"));
         Optional<User> optionalUser = userRepo.findById(userId);
         User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
-        Kvitter kvitter = Kvitter.builder().message(message).user(user).createdDateAndTime(localDateTime).hashtags(hashtagList).isPrivate(isPrivate).build();
+        Kvitter kvitter = Kvitter.builder().message(message).user(user).createdDateAndTime(now.toLocalDateTime()).hashtags(hashtagList).isPrivate(isPrivate).build();
         kvitterRepo.save(kvitter);
     }
 
