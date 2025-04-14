@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DetailedRekvittDto {
+public class DetailedRekvittDto implements DetailedDtoInterface{
     private UUID id;
     private MiniUserDto user;
     private MiniKvitterDto originalKvitter;

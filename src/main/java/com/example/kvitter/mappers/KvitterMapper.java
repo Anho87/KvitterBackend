@@ -5,7 +5,7 @@ import com.example.kvitter.entities.Kvitter;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {KvitterMapper.class, UserMapper.class})
 public interface KvitterMapper {
 
     @Mapping(source = "id", target = "id")

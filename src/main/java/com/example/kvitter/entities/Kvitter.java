@@ -27,7 +27,7 @@ public class Kvitter {
     @Column(length = 280, nullable = false)
     private String message;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
@@ -43,6 +43,9 @@ public class Kvitter {
 
     @JoinColumn(name = "is_private", nullable = false)
     private Boolean isPrivate;
+
+//    @JoinColumn(name = "is_active", nullable = false)
+//    private Boolean isActive;
 
 
     @OneToMany(mappedBy = "kvitter", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -14,13 +14,14 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DetailedKvitterDto {
+public class DetailedKvitterDto implements DetailedDtoInterface{
     private UUID id;
     private String message;
     private MiniUserDto user;
     private LocalDateTime createdDateAndTime;
     private List<MiniHashtagDto> hashtags = new ArrayList<>();
     private boolean isPrivate;
+//    private boolean isActive;
     private List<MiniLikeDto> likes = new ArrayList<>();
     private List<DetailedReplyDto> replies = new ArrayList<>();
     private List<MiniRekvittDto> rekvitts = new ArrayList<>();

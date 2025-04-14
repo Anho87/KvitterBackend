@@ -17,7 +17,9 @@ public class MiniKvitterDto {
     
     private UUID id;
     private String message;
+    private MiniUserDto user;
     private LocalDateTime createdDateAndTime;
     private boolean isPrivate;
+//    private boolean isActive;
    
 }

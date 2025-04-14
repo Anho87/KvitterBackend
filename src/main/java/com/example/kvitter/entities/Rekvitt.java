@@ -24,7 +24,7 @@ public class Rekvitt {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "original_kvitter_id", nullable = false)
     private Kvitter originalKvitter;
 }

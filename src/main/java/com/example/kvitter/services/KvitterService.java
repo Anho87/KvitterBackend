@@ -1,11 +1,10 @@
 package com.example.kvitter.services;
 
-import com.example.kvitter.dtos.DetailedReplyDto;
+import com.example.kvitter.dtos.DetailedDtoInterface;
 import com.example.kvitter.dtos.DetailedUserDto;
 import com.example.kvitter.entities.Hashtag;
 import com.example.kvitter.dtos.DetailedKvitterDto;
 import com.example.kvitter.entities.Kvitter;
-import com.example.kvitter.entities.Reply;
 import com.example.kvitter.mappers.KvitterMapper;
 import com.example.kvitter.mappers.UserMapper;
 import com.example.kvitter.repos.KvitterRepo;
@@ -16,7 +15,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -32,7 +30,7 @@ public class KvitterService {
     private final HashtagService hashtagService;
     private final UserMapper userMapper;
 
-    
+
     public void addKvitter(String message, List<String> hashtags, Boolean isPrivate, DetailedUserDto detailedUserDto) {
         System.out.println(isPrivate);
         List<Hashtag> hashtagList = new ArrayList<>();
@@ -55,36 +53,44 @@ public class KvitterService {
         for (Hashtag hashtag : kvitter.getHashtags()) {
             hashtag.getKvitters().remove(kvitter);
         }
-        kvitterRepo.deleteKvitterById(uuid);
+        if (kvitter.getReplies().isEmpty() && kvitter.getRekvitts().isEmpty()) {
+            kvitterRepo.deleteKvitterById(uuid);
+        }else {
+            kvitter.setMessage("Deleted...");
+            kvitterRepo.save(kvitter);
+        }
     }
 
 
     //TODO skriv test dela på denna så det är 3st för lättare testning
-    public List<DetailedKvitterDto> getFilteredKvitters(String userName, DetailedUserDto detailedUserDto) {
+    public List<DetailedDtoInterface> getFilteredKvitters(String userName, DetailedUserDto detailedUserDto) {
         User user = userRepo.findByEmail(detailedUserDto.getEmail());
         Optional<User> optionalUser = userRepo.findByUserName(userName);
         User targetUser = userMapper.optionalToUser(optionalUser);
-        List<DetailedKvitterDto> detailedKvitterDtoList;
+        List<DetailedDtoInterface> detailedInterfaceDtoList;
         if (optionalUser.isEmpty()) {
             System.out.println("Fetching all kvitters, including private ones for followers of logged-in user");
-            detailedKvitterDtoList = mapToDtoList(kvitterRepo.getDynamicKvitterList(user.getId()));
-        }else if(targetUser.getId() != user.getId()){
+            detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.getDynamicKvitterList(user.getId()));
+        } else if (targetUser.getId() != user.getId()) {
             System.out.println("Fetching kvitters for target user by logged-in user");
-            detailedKvitterDtoList = mapToDtoList(kvitterRepo.findAllByTargetUser(targetUser.getId(),user.getId()));
-        }else {
+            detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.findAllByTargetUser(targetUser.getId(), user.getId()));
+        } else {
             System.out.println("Fetching kvitters for logged-in user");
-            detailedKvitterDtoList = mapToDtoList(kvitterRepo.findAllByLoggedInUser(user.getId()));
+            detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.findAllByLoggedInUser(user.getId()));
         }
-        return detailedKvitterDtoList;
+        return detailedInterfaceDtoList;
     }
-    
-    private List<DetailedKvitterDto> mapToDtoList(List<Kvitter> kvitterList){
+
+    private List<DetailedDtoInterface> mapToInterfaceDtoList(List<Kvitter> kvitterList) {
         return kvitterList.stream().map(kvitterMapper::kvitterToDetailedKvitterDTO).collect(Collectors.toList());
     }
 
+    private List<DetailedKvitterDto> mapToDetailedKvitterDtoList(List<Kvitter> kvitterList) {
+        return kvitterList.stream().map(kvitterMapper::kvitterToDetailedKvitterDTO).collect(Collectors.toList());
+    }
 
     //TODO skriv test
     public List<DetailedKvitterDto> getTenLatestKvitterThatIsNotPrivate() {
-        return mapToDtoList(kvitterRepo.getTenLatestKvitterThatIsNotPrivate());
+        return mapToDetailedKvitterDtoList(kvitterRepo.getTenLatestKvitterThatIsNotPrivate());
     }
 }

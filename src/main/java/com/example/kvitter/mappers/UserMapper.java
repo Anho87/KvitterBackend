@@ -9,7 +9,7 @@ import org.mapstruct.Mapping;
 
 import java.util.Optional;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {KvitterMapper.class, UserMapper.class})
 public interface UserMapper {
 
     @Mapping(source = "id", target = "id")
