@@ -3,14 +3,12 @@ package com.example.kvitter.controllers;
 import com.example.kvitter.configs.UserAuthProvider;
 import com.example.kvitter.dtos.DetailedUserDto;
 import com.example.kvitter.dtos.RekvittRequestDto;
+import com.example.kvitter.dtos.RemoveRekvittRequestDto;
 import com.example.kvitter.exceptions.ExpiredTokenException;
 import com.example.kvitter.services.RekvittService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +28,17 @@ public class RekvittController {
         } catch (ExpiredTokenException e) {
             throw new ExpiredTokenException("Access token expired", e);
         }
-        
+    }
+    
+    @DeleteMapping("/removeRekvitt")
+    public void removeRekvitt(@RequestBody RemoveRekvittRequestDto request, @RequestHeader("Authorization") String token){
+        try{
+            String rekvittId = request.rekvittId();
+            Authentication authentication = userAuthProvider.validateTokenStrongly(token.replace("Bearer ", ""));
+            DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
+            rekvittService.removeRekvitt(rekvittId);
+        }catch (ExpiredTokenException e) {
+            throw new ExpiredTokenException("Access token expired", e);
+        }
     }
 }

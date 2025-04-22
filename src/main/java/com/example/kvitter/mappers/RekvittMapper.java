@@ -11,5 +11,6 @@ public interface RekvittMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "user", target = "user")
     @Mapping(source = "originalKvitter", target = "originalKvitter")
+    @Mapping(source = "createdDateAndTime", target = "createdDateAndTime")
     DetailedRekvittDto rekvittToDetailedRekvittDto(Rekvitt rekvitt);
 }

@@ -33,7 +33,7 @@ public class Kvitter {
     
     private LocalDateTime createdDateAndTime;
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "kvitter_hashtags",
             joinColumns = @JoinColumn(name = "kvitter_id"),
@@ -44,12 +44,11 @@ public class Kvitter {
     @JoinColumn(name = "is_private", nullable = false)
     private Boolean isPrivate;
 
-//    @JoinColumn(name = "is_active", nullable = false)
+//    @Column(name = "is_active")
 //    private Boolean isActive;
 
-
-    @OneToMany(mappedBy = "kvitter", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Like> likes = new ArrayList<>();
+    @ManyToMany(mappedBy = "likes", fetch = FetchType.EAGER)
+    private List<User> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "kvitter", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Reply> replies = new ArrayList<>();
@@ -64,4 +63,5 @@ public class Kvitter {
         this.hashtags = hashtags;
         this.isPrivate = isPrivate;
     }
+    
 }

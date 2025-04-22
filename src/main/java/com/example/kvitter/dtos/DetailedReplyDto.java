@@ -22,4 +22,5 @@ public class DetailedReplyDto {
     private MiniKvitterDto kvitter;
     private MiniReplyDto parentReply;
     private List<DetailedReplyDto> replies = new ArrayList<>();
+    private Boolean isFollowing;
 }

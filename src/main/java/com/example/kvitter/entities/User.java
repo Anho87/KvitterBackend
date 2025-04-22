@@ -20,38 +20,47 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    
+
     @Column(name = "email", unique = true)
     private String email;
     private String password;
-    
+
     @Column(unique = true)
     private String userName;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Kvitter> kvitterList = new ArrayList<>();
-    
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Like> likes = new ArrayList<>();
+
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+//    private List<Like> likes = new ArrayList<>();
+
+    @Builder.Default
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "likes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "kvitter_id")
+    )
+    private List<Kvitter> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Reply> replies = new ArrayList<>();
-    
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_following",
-            joinColumns = @JoinColumn(name = "follower_id"), 
-            inverseJoinColumns = @JoinColumn(name = "following_id") 
+            joinColumns = @JoinColumn(name = "follower_id"),
+            inverseJoinColumns = @JoinColumn(name = "following_id")
     )
     private List<User> following = new ArrayList<>();
-    
+
     @ManyToMany(mappedBy = "following", fetch = FetchType.EAGER)
     private List<User> followers = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Rekvitt> rekvitts = new ArrayList<>();
-    
+
     public User(String email, String password, String userName, List<Kvitter> kvitterList) {
         this.email = email;
         this.password = password;

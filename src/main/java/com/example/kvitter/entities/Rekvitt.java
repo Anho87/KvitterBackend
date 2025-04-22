@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -27,4 +28,6 @@ public class Rekvitt {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "original_kvitter_id", nullable = false)
     private Kvitter originalKvitter;
+
+    private LocalDateTime createdDateAndTime;
 }

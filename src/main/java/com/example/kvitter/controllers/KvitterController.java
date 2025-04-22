@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -26,7 +27,6 @@ public class KvitterController {
             String message = request.message();
             List<String> hashtags = request.hashtags();
             Boolean isPrivate = request.isPrivate();
-            System.out.println(isPrivate);
             Authentication authentication = userAuthProvider.validateTokenStrongly(token.replace("Bearer ", ""));
             DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
             kvitterService.addKvitter(message, hashtags, isPrivate, detailedUserDto);
@@ -41,8 +41,9 @@ public class KvitterController {
         Authentication authentication = userAuthProvider.validateToken(token.replace("Bearer ", ""));
         DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
         List<DetailedDtoInterface> detailedInterfaceDtoList = new ArrayList<>();
-        detailedInterfaceDtoList.addAll(kvitterService.getFilteredKvitters(userName, detailedUserDto));
         detailedInterfaceDtoList.addAll(rekvittService.getRekvitts(userName,detailedUserDto));
+        detailedInterfaceDtoList.addAll(kvitterService.getFilteredKvitters(userName, detailedUserDto));
+        detailedInterfaceDtoList.sort(Comparator.comparing(DetailedDtoInterface::getCreatedDateAndTime).reversed());
         return detailedInterfaceDtoList;
     }
 
@@ -55,7 +56,8 @@ public class KvitterController {
             throw new ExpiredTokenException("Access token expired", e);
         }
     }
-
+    
+    
     @GetMapping("/welcomePageKvitterList")
     public List<DetailedKvitterDto> getWelcomePageKvitter() {
         return kvitterService.getTenLatestKvitterThatIsNotPrivate();

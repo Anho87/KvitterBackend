@@ -18,7 +18,7 @@ public class DetailedUserDto {
     private String email;
     private String userName;
     private List<MiniKvitterDto> kvitterList;
-    private List<MiniLikeDto> likes;
+    private List<MiniKvitterDto> likes;
     private List<MiniReplyDto> replies;
     private List<MiniUserDto> following = new ArrayList<>();
     private List<MiniUserDto> followers = new ArrayList<>();

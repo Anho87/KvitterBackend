@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -19,7 +21,10 @@ public class MiniKvitterDto {
     private String message;
     private MiniUserDto user;
     private LocalDateTime createdDateAndTime;
-    private boolean isPrivate;
+    private List<MiniHashtagDto> hashtags = new ArrayList<>();
+    private Boolean isPrivate;
 //    private boolean isActive;
+    private Boolean isFollowing;
+    private Boolean isLiked;
    
 }
