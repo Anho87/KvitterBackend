@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -30,12 +31,11 @@ import java.util.stream.Collectors;
 public class RekvittService {
 
     private final RekvittRepo rekvittRepo;
-    private final UserMapper userMapper;
     private final KvitterRepo kvitterRepo;
     private final RekvittMapper rekvittMapper;
     private final UserRepo userRepo;
-
-    //TODO skriv test
+    private final UserMapper userMapper;
+    
     public void addRekvitt(String kvitterId, DetailedUserDto detailedUserDto) {
         User user = userRepo.findByEmail(detailedUserDto.getEmail());
         UUID uuid = UUID.fromString(kvitterId);
@@ -55,23 +55,30 @@ public class RekvittService {
             throw new AppException("User already rekvitted this kvitter", HttpStatus.BAD_REQUEST);
         }
     }
-
-    //TODO skriv test
+    
     public void removeRekvitt(String rekvittId) {
         UUID uuid = UUID.fromString(rekvittId);
         Rekvitt rekvitt = rekvittRepo.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Rekvitt not found"));
         rekvittRepo.deleteRekvittByById(rekvitt.getId());
     }
-
-    //TODO skriv test
-    public List<DetailedDtoInterface> getRekvitts(String userName, DetailedUserDto detailedUserDto) {
+    
+    public List<DetailedDtoInterface> getFilteredRekvitts(String userName, DetailedUserDto detailedUserDto) {
         User user = userRepo.findByEmail(detailedUserDto.getEmail());
-        System.out.println("Fetching rekvitts for logged in user");
-        return mapToInterfaceDto(rekvittRepo.getRekvittsByFollowedByAndUser(user.getId()), user);
+        Optional<User> optionalUser = userRepo.findByUserName(userName);
+        User targetUser = userMapper.optionalToUser(optionalUser);
+        List<DetailedDtoInterface> detailedInterfaceDtoList;
+        if (optionalUser.isEmpty()) {
+            System.out.println("Fetching rekvitts for logged in user");
+            detailedInterfaceDtoList = mapToInterfaceDtoList(rekvittRepo.getRekvittsByFollowedByAndUser(user.getId()), user);
+        }else {
+            System.out.println("Fetching rekvitts for target user");
+            detailedInterfaceDtoList = mapToInterfaceDtoList(rekvittRepo.findAllByUserId(targetUser.getId()),user);
+        }
+        return detailedInterfaceDtoList;
     }
 
-    private List<DetailedDtoInterface> mapToInterfaceDto(List<Rekvitt> rekvittList, User user) {
+    private List<DetailedDtoInterface> mapToInterfaceDtoList(List<Rekvitt> rekvittList, User user) {
         return rekvittList.stream().map(rekvitt -> {
             DetailedRekvittDto dto = rekvittMapper.rekvittToDetailedRekvittDto(rekvitt);
             dto.getOriginalKvitter().setIsFollowing(user.getFollowing().contains(rekvitt.getOriginalKvitter().getUser()));

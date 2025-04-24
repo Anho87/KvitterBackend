@@ -18,4 +18,5 @@ public class MiniReplyDto {
     private LocalDateTime createdDateAndTime;
     private UUID userId;
     private String userName;
+    private Boolean isActive;
 }

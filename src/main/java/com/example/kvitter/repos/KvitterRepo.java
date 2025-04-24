@@ -21,19 +21,19 @@ public interface KvitterRepo extends JpaRepository<Kvitter, UUID> {
     
     
     
-    @Query(value = "SELECT * FROM Kvitter WHERE is_private = false ORDER BY created_date_and_time DESC LIMIT 10", nativeQuery = true)
+    @Query(value = "SELECT * FROM Kvitter WHERE is_private = false AND is_active = true ORDER BY created_date_and_time DESC LIMIT 10", nativeQuery = true)
     List<Kvitter> getTenLatestKvitterThatIsNotPrivate();
     
     
     
 
-    @Query(value = "SELECT DISTINCT k.* FROM Kvitter k LEFT JOIN User_following u ON k.user_id = u.follower_id WHERE (u.following_id = :userId) OR (k.is_private = false) OR (k.is_private = true AND k.user_id = :userId) ORDER BY k.created_date_and_time DESC LIMIT 10", nativeQuery = true)
+    @Query(value = "SELECT DISTINCT k.* FROM Kvitter k LEFT JOIN User_following u ON k.user_id = u.follower_id WHERE (u.following_id = :userId AND k.is_active = true) OR (k.is_private = false AND k.is_active = true)  OR (k.is_private = true AND k.is_active = true AND k.user_id = :userId) ORDER BY k.created_date_and_time DESC LIMIT 10", nativeQuery = true)
     List<Kvitter> getDynamicKvitterList(@Param("userId") UUID userId);
     
-    @Query(value = "SELECT DISTINCT k.* FROM Kvitter k LEFT JOIN User_following u ON k.user_id = u.follower_id WHERE u.follower_id = :targetId and u.following_id = :activeId and k.is_private = true OR k.user_id = :targetId and k.is_private = false ORDER BY k.created_date_and_time DESC", nativeQuery = true)
+    @Query(value = "SELECT DISTINCT k.* FROM Kvitter k LEFT JOIN User_following u ON k.user_id = u.follower_id WHERE (u.follower_id = :targetId and u.following_id = :activeId and k.is_private = true and k.is_active = true) OR (k.user_id = :targetId and k.is_private = false and k.is_active = true) ORDER BY k.created_date_and_time DESC", nativeQuery = true)
     List<Kvitter> findAllByTargetUser(@Param("targetId") UUID targetId, @Param("activeId") UUID activeId);
     
-    @Query(value = "SELECT * FROM Kvitter WHERE user_id = :userId ORDER BY created_date_and_time DESC", nativeQuery = true)
+    @Query(value = "SELECT * FROM Kvitter WHERE (user_id = :userId and is_active = true) ORDER BY created_date_and_time DESC", nativeQuery = true)
     List<Kvitter> findAllByLoggedInUser(@Param("userId") UUID userId);
 
 }

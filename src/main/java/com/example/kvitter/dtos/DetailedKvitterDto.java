@@ -21,7 +21,7 @@ public class DetailedKvitterDto implements DetailedDtoInterface{
     private LocalDateTime createdDateAndTime;
     private List<MiniHashtagDto> hashtags = new ArrayList<>();
     private Boolean isPrivate;
-//    private boolean isActive;
+    private Boolean isActive;
     private List<MiniUserDto> likes = new ArrayList<>();
     private List<DetailedReplyDto> replies = new ArrayList<>();
     private List<MiniRekvittDto> rekvitts = new ArrayList<>();

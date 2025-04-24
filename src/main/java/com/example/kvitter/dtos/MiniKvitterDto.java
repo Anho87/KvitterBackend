@@ -23,7 +23,7 @@ public class MiniKvitterDto {
     private LocalDateTime createdDateAndTime;
     private List<MiniHashtagDto> hashtags = new ArrayList<>();
     private Boolean isPrivate;
-//    private boolean isActive;
+    private Boolean isActive;
     private Boolean isFollowing;
     private Boolean isLiked;
    

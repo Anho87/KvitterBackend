@@ -41,11 +41,11 @@ public class Kvitter {
     )
     private List<Hashtag> hashtags = new ArrayList<>();
 
-    @JoinColumn(name = "is_private", nullable = false)
+    @Column(name = "is_private", nullable = false)
     private Boolean isPrivate;
 
-//    @Column(name = "is_active")
-//    private Boolean isActive;
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
 
     @ManyToMany(mappedBy = "likes", fetch = FetchType.EAGER)
     private List<User> likes = new ArrayList<>();

@@ -1,115 +1,178 @@
-package com.example.kvitter.KvitterTests;
+package com.example.kvitter.services;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-import com.example.kvitter.configs.UserAuthProvider;
+import com.example.kvitter.dtos.DetailedDtoInterface;
+import com.example.kvitter.dtos.DetailedKvitterDto;
 import com.example.kvitter.dtos.DetailedUserDto;
+import com.example.kvitter.dtos.MiniUserDto;
 import com.example.kvitter.entities.Hashtag;
 import com.example.kvitter.entities.Kvitter;
+import com.example.kvitter.entities.Reply;
 import com.example.kvitter.entities.User;
 import com.example.kvitter.mappers.KvitterMapper;
+import com.example.kvitter.mappers.ReplyMapper;
 import com.example.kvitter.mappers.UserMapper;
 import com.example.kvitter.repos.KvitterRepo;
 import com.example.kvitter.repos.UserRepo;
-import com.example.kvitter.services.HashtagService;
-import com.example.kvitter.services.KvitterService;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import java.time.LocalDateTime;
-import java.util.*;
+import org.mockito.MockitoAnnotations;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-@ExtendWith(MockitoExtension.class)
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 class KvitterServiceTests {
 
-    @Mock
-    private KvitterRepo kvitterRepo;
+    @Mock private KvitterRepo kvitterRepo;
+    @Mock private UserRepo userRepo;
+    @Mock private KvitterMapper kvitterMapper;
+    @Mock private HashtagService hashtagService;
+    @Mock private UserMapper userMapper;
+    @Mock private ReplyMapper replyMapper;
 
-    @Mock
-    private UserRepo userRepo;
+    @InjectMocks private KvitterService kvitterService;
 
-    @Mock
-    private KvitterMapper kvitterMapper;
+    private User user;
+    private Kvitter kvitter;
+    private DetailedUserDto detailedUserDto;
+    private DetailedKvitterDto detailedKvitterDto;
     
-    @Mock
-    private HashtagService hashtagService;
-    @Mock
-    private UserMapper userMapper;
-    @InjectMocks
-    private KvitterService kvitterService;
-    
+    private MiniUserDto miniUserDto;
 
     @BeforeEach
-    void setUp() {
-        kvitterService = new KvitterService(kvitterRepo, userRepo, kvitterMapper,hashtagService,userMapper);
+    void setup() {
+        MockitoAnnotations.openMocks(this);
+        user = new User();
+        user.setId(UUID.randomUUID());
+        user.setEmail("test@example.com");
+        user.setUserName("testuser");
+
+        detailedUserDto = new DetailedUserDto();
+        detailedUserDto.setId(user.getId());
+        detailedUserDto.setEmail(user.getEmail());
+        detailedUserDto.setUserName(user.getUserName());
+        
+        miniUserDto = new MiniUserDto();
+        miniUserDto.setId(detailedUserDto.getId());
+        miniUserDto.setEmail(detailedUserDto.getEmail());
+        miniUserDto.setUserName(detailedUserDto.getUserName());
+
+        kvitter = new Kvitter();
+        kvitter.setId(UUID.randomUUID());
+        kvitter.setMessage("Hello World");
+        kvitter.setUser(user);
+        kvitter.setIsActive(true);
+
+        detailedKvitterDto = new DetailedKvitterDto();
+        detailedKvitterDto.setId(kvitter.getId());
+        detailedKvitterDto.setMessage(kvitter.getMessage());
+        detailedKvitterDto.setUser(miniUserDto);
+        detailedKvitterDto.setIsActive(kvitter.getIsActive());
+        
     }
 
     @Test
     void testAddKvitter() {
-        UUID userId = UUID.randomUUID();
-        User user = new User();
-        user.setId(userId);
-        boolean isPrivate = false;
+        when(userRepo.findById(any())).thenReturn(Optional.of(user));
+        when(hashtagService.addHashTag(anyString())).thenReturn(new Hashtag());
 
-        DetailedUserDto detailedUserDto = mock(DetailedUserDto.class);
-        when(detailedUserDto.getId()).thenReturn(userId);
+        kvitterService.addKvitter("Hello", List.of("test"), false, detailedUserDto);
 
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        
-        Kvitter kvitter = Kvitter.builder()
-                .message("Test message")
-                .user(user)
-                .createdDateAndTime(LocalDateTime.now())
-                .hashtags(new ArrayList<>())
-                .isPrivate(isPrivate)
-                .build();
-
-        when(kvitterRepo.save(any(Kvitter.class))).thenReturn(kvitter);
-
-        assertDoesNotThrow(() -> kvitterService.addKvitter("Test message", new ArrayList<>(), isPrivate, detailedUserDto));
-        verify(kvitterRepo, times(1)).save(any(Kvitter.class));
-    }
-
-
-    @Test
-    void testRemoveKvitter() {
-        UUID kvitterId = UUID.randomUUID();
-        Kvitter kvitter = Kvitter.builder().id(kvitterId).hashtags(new ArrayList<>()).build();
-        when(kvitterRepo.findById(kvitterId)).thenReturn(Optional.of(kvitter));
-
-        kvitterService.removeKvitter(kvitterId.toString());
-
-        verify(kvitterRepo, times(1)).deleteKvitterById(kvitterId);
+        verify(kvitterRepo).save(any(Kvitter.class));
     }
 
     @Test
-    void testRemoveKvitterNotFound() {
-        UUID kvitterId = UUID.randomUUID();
-        when(kvitterRepo.findById(kvitterId)).thenReturn(Optional.empty());
-        
-        assertThrows(EntityNotFoundException.class, () -> kvitterService.removeKvitter(kvitterId.toString()));
+    void testRemoveKvitter_DeletesCompletely() {
+        kvitter.setReplies(Collections.emptyList());
+        kvitter.setRekvitts(Collections.emptyList());
+        when(kvitterRepo.findById(any())).thenReturn(Optional.of(kvitter));
+
+        kvitterService.removeKvitter(kvitter.getId().toString());
+
+        verify(kvitterRepo).deleteKvitterById(eq(kvitter.getId()));
     }
 
-//    @Test
-//    void testGetAllDetailedKvittersDTO() {
-//        Kvitter kvitter = Kvitter.builder()
-//                .id(UUID.randomUUID())
-//                .message("Test message")
-//                .createdDateAndTime(LocalDateTime.now())
-//                .hashtags(new ArrayList<>())
-//                .build();
-//        List<Kvitter> kvitters = List.of(kvitter);
-//        when(kvitterRepo.findAll()).thenReturn(kvitters);
-//        
-//        List<DetailedKvitterDto> result = kvitterService.getAllDetailedKvittersDTO();
-//        
-//        assertNotNull(result);
-//        assertEquals(1, result.size());
-//        verify(kvitterRepo, times(1)).findAll();
-//    }
-}
+    @Test
+    void testRemoveKvitter_MarksAsDeleted() {
+        kvitter.setReplies(List.of(mock(Reply.class))); 
+        when(kvitterRepo.findById(any())).thenReturn(Optional.of(kvitter));
+
+        kvitterService.removeKvitter(kvitter.getId().toString());
+
+        assertFalse(kvitter.getIsActive());
+        assertEquals("Deleted...", kvitter.getMessage());
+        verify(kvitterRepo).save(kvitter);
+    }
+
+    @Test
+    void testGetFilteredKvitters_whenTargetUserIsEmpty() {
+        List<Kvitter> kvitterList = List.of(kvitter);
+        
+        when(userRepo.findByEmail("test@example.com")).thenReturn(user);
+        when(userRepo.findByUserName("nonexistent")).thenReturn(Optional.empty());
+        when(kvitterRepo.getDynamicKvitterList(user.getId())).thenReturn(kvitterList);
+        when(kvitterMapper.kvitterToDetailedKvitterDTO(any())).thenReturn(detailedKvitterDto);
+
+        List<DetailedDtoInterface> result = kvitterService.getFilteredKvitters("nonexistent", detailedUserDto);
+
+        assertEquals(1, result.size());
+        assertTrue(result.get(0) instanceof DetailedKvitterDto);
+    }
+
+    @Test
+    void testGetFilteredKvitters_whenTargetUserIsDifferent() {
+        User targetUser = new User();
+        targetUser.setId(UUID.randomUUID()); 
+        
+        List<Kvitter> kvitterList = List.of(kvitter);
+
+        when(userRepo.findByEmail("test@example.com")).thenReturn(user);
+        when(userRepo.findByUserName("someoneElse")).thenReturn(Optional.of(targetUser));
+        when(userMapper.optionalToUser(Optional.of(targetUser))).thenReturn(targetUser);
+        when(kvitterRepo.findAllByTargetUser(targetUser.getId(), user.getId())).thenReturn(kvitterList);
+        when(kvitterMapper.kvitterToDetailedKvitterDTO(any())).thenReturn(detailedKvitterDto);
+
+        List<DetailedDtoInterface> result = kvitterService.getFilteredKvitters("someoneElse", detailedUserDto);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testGetFilteredKvitters_whenTargetUserIsSameAsLoggedIn() {
+        User targetUser = new User();
+        targetUser.setId(user.getId());
+
+        List<Kvitter> kvitterList = List.of(kvitter);
+
+        when(userRepo.findByEmail("test@example.com")).thenReturn(user);
+        when(userRepo.findByUserName("sameUser")).thenReturn(Optional.of(targetUser));
+        when(userMapper.optionalToUser(Optional.of(targetUser))).thenReturn(targetUser);
+        when(kvitterRepo.findAllByLoggedInUser(targetUser.getId())).thenReturn(kvitterList);
+        when(kvitterMapper.kvitterToDetailedKvitterDTO(any())).thenReturn(detailedKvitterDto);
+
+        List<DetailedDtoInterface> result = kvitterService.getFilteredKvitters("sameUser", detailedUserDto);
+
+        assertEquals(1, result.size());
+    }
+    
+    @Test
+    void testGetTenLatestKvitterThatIsNotPrivate() {
+        DetailedKvitterDto detailedDto = new DetailedKvitterDto();
+        detailedDto.setIsActive(true);
+        when(kvitterRepo.getTenLatestKvitterThatIsNotPrivate()).thenReturn(List.of(kvitter));
+        when(kvitterMapper.kvitterToDetailedKvitterDTO(any())).thenReturn(detailedDto);
+
+        List<DetailedKvitterDto> result = kvitterService.getTenLatestKvitterThatIsNotPrivate();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertTrue(result.get(0).getIsActive());
+    }
+
+} 

@@ -41,7 +41,7 @@ public class KvitterController {
         Authentication authentication = userAuthProvider.validateToken(token.replace("Bearer ", ""));
         DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
         List<DetailedDtoInterface> detailedInterfaceDtoList = new ArrayList<>();
-        detailedInterfaceDtoList.addAll(rekvittService.getRekvitts(userName,detailedUserDto));
+        detailedInterfaceDtoList.addAll(rekvittService.getFilteredRekvitts(userName,detailedUserDto));
         detailedInterfaceDtoList.addAll(kvitterService.getFilteredKvitters(userName, detailedUserDto));
         detailedInterfaceDtoList.sort(Comparator.comparing(DetailedDtoInterface::getCreatedDateAndTime).reversed());
         return detailedInterfaceDtoList;

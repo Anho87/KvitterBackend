@@ -46,7 +46,7 @@ public class KvitterService {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Stockholm"));
         Optional<User> optionalUser = userRepo.findById(userId);
         User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
-        Kvitter kvitter = Kvitter.builder().message(message).user(user).createdDateAndTime(now.toLocalDateTime()).hashtags(hashtagList).isPrivate(isPrivate).build();
+        Kvitter kvitter = Kvitter.builder().message(message).user(user).createdDateAndTime(now.toLocalDateTime()).hashtags(hashtagList).isPrivate(isPrivate).isActive(true).build();
         kvitterRepo.save(kvitter);
     }
 
@@ -61,12 +61,12 @@ public class KvitterService {
             kvitterRepo.deleteKvitterById(uuid);
         }else {
             kvitter.setMessage("Deleted...");
+            kvitter.setIsActive(false);
             kvitterRepo.save(kvitter);
         }
     }
     
 
-    //TODO skriv test dela på denna så det är 3st för lättare testning
     public List<DetailedDtoInterface> getFilteredKvitters(String userName, DetailedUserDto detailedUserDto) {
         User user = userRepo.findByEmail(detailedUserDto.getEmail());
         Optional<User> optionalUser = userRepo.findByUserName(userName);
@@ -119,7 +119,7 @@ public class KvitterService {
         return kvitterList.stream().map(kvitterMapper::kvitterToDetailedKvitterDTO).collect(Collectors.toList());
     }
 
-    //TODO skriv test
+
     public List<DetailedKvitterDto> getTenLatestKvitterThatIsNotPrivate() {
         return mapToDetailedKvitterDtoList(kvitterRepo.getTenLatestKvitterThatIsNotPrivate());
     }

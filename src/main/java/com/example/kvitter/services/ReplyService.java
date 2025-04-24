@@ -28,7 +28,7 @@ public class ReplyService {
     private final KvitterRepo kvitterRepo;
 
 
-    //TODO skriv test
+   
     public void addReply(String message, UUID kvitterId, UUID parentReplyId, DetailedUserDto detailedUserDto) {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Stockholm"));
         User user = userRepo.findById(detailedUserDto.getId())
@@ -38,6 +38,7 @@ public class ReplyService {
                 .message(message)
                 .createdDateAndTime(now.toLocalDateTime())
                 .user(user)
+                .isActive(true)
                 .build();
 
         if (parentReplyId != null) {
@@ -53,7 +54,7 @@ public class ReplyService {
         replyRepo.save(reply);
     }
 
-    //TODO skriv test
+    
     public void removeReply(String id) {
         UUID uuid = UUID.fromString(id);
         Reply reply = replyRepo.findById(uuid)
@@ -62,6 +63,7 @@ public class ReplyService {
             replyRepo.deleteReplyById(reply.getId());
         } else {
             reply.setMessage("Deleted...");
+            reply.setIsActive(false);
             replyRepo.save(reply);
         }
     }

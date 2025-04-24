@@ -44,5 +44,8 @@ public class Reply {
 
     @OneToMany(mappedBy = "parentReply", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Reply> replies = new ArrayList<>();
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
 }
 

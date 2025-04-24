@@ -31,10 +31,7 @@ public class User {
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Kvitter> kvitterList = new ArrayList<>();
-
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-//    private List<Like> likes = new ArrayList<>();
-
+    
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

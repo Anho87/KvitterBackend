@@ -63,7 +63,7 @@ public class UserService {
         
     }
     
-    //TODO make test
+   
     public void followUser(String email, DetailedUserDto detailedUserDto){
         User toBeFollowedUser = userRepo.findByEmail(email);
         User wantToFollowUser = userRepo.findByEmail(detailedUserDto.getEmail());
@@ -76,7 +76,7 @@ public class UserService {
         }
     }
     
-    //TODO make test
+  
     public void unFollowUser(String email, DetailedUserDto detailedUserDto) {
         User toBeUnFollowedUser = userRepo.findByEmail(email);
         User wantToUnFollowUser = userRepo.findByEmail(detailedUserDto.getEmail());
@@ -91,7 +91,7 @@ public class UserService {
         
     }
     
-    //TODO make test
+    
     public void upvoteKvitter(String kvitterId, DetailedUserDto detailedUserDto){
         UUID uuid = UUID.fromString(kvitterId);
         Kvitter kvitter = kvitterRepo.findById(uuid)
@@ -106,7 +106,7 @@ public class UserService {
         }
     }
 
-    //TODO make test
+ 
     public void removeUpvoteOnKvitter(String kvitterId, DetailedUserDto detailedUserDto){
         UUID uuid = UUID.fromString(kvitterId);
         Kvitter kvitter = kvitterRepo.findById(uuid)
@@ -120,4 +120,5 @@ public class UserService {
             throw new AppException("User hasn't upvoted this kvitter yet", HttpStatus.BAD_REQUEST);
         }
     }
+    
 }

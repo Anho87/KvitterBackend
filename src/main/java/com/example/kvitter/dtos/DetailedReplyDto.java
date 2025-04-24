@@ -23,4 +23,5 @@ public class DetailedReplyDto {
     private MiniReplyDto parentReply;
     private List<DetailedReplyDto> replies = new ArrayList<>();
     private Boolean isFollowing;
+    private Boolean isActive;
 }
