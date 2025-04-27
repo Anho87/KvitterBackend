@@ -1,4 +1,4 @@
-package com.example.kvitter.services;
+package com.example.kvitter.KvitterTests;
 
 import com.example.kvitter.dtos.DetailedDtoInterface;
 import com.example.kvitter.dtos.DetailedKvitterDto;
@@ -13,6 +13,8 @@ import com.example.kvitter.mappers.ReplyMapper;
 import com.example.kvitter.mappers.UserMapper;
 import com.example.kvitter.repos.KvitterRepo;
 import com.example.kvitter.repos.UserRepo;
+import com.example.kvitter.services.HashtagService;
+import com.example.kvitter.services.KvitterService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

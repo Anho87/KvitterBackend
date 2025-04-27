@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.kvitter.entities.Hashtag;
+import com.example.kvitter.mappers.HashtagMapper;
 import com.example.kvitter.repos.HashtagRepo;
 import com.example.kvitter.services.HashtagService;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,13 +20,16 @@ class HashtagServiceTests {
  
     @Mock
     private HashtagRepo hashtagRepo;
+    
+    @Mock
+    private HashtagMapper hashtagMapper;
 
     @InjectMocks
     private HashtagService hashtagService;
 
     @BeforeEach
     void setUp() {
-        hashtagService = new HashtagService(hashtagRepo);
+        
     }
 
     @Test

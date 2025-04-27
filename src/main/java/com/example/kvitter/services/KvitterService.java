@@ -56,6 +56,7 @@ public class KvitterService {
                 .orElseThrow(() -> new EntityNotFoundException("Kvitter not found"));
         for (Hashtag hashtag : kvitter.getHashtags()) {
             hashtag.getKvitters().remove(kvitter);
+            hashtagService.removeHashtag(hashtag.getId());
         }
         if (kvitter.getReplies().isEmpty() && kvitter.getRekvitts().isEmpty()) {
             kvitterRepo.deleteKvitterById(uuid);
