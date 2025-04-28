@@ -8,6 +8,8 @@ import com.example.kvitter.repos.HashtagRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,7 +24,9 @@ public class HashtagService {
 
 
     public Hashtag addHashTag(String hashtag) {
-        Hashtag newHashtag = new Hashtag(hashtag);
+        String lowerCaseHashtag = hashtag.toLowerCase();
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Stockholm"));
+        Hashtag newHashtag = new Hashtag(lowerCaseHashtag,now.toLocalDateTime());
         return hashtagRepo.save(newHashtag);
     }
     

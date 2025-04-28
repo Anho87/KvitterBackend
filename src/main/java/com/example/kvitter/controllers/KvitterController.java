@@ -35,6 +35,15 @@ public class KvitterController {
         }
     }
 
+    @GetMapping("/search")
+    public List<DetailedDtoInterface>getSearchedKvitterDtoList(@RequestParam(required = false) String category,@RequestParam(required = false)  String searched , @RequestHeader("Authorization") String token){
+        Authentication authentication = userAuthProvider.validateToken(token.replace("Bearer ", ""));
+        DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
+        List<DetailedDtoInterface> detailedInterfaceDtoList;
+        detailedInterfaceDtoList = kvitterService.getSearchedKvitters(category,searched, detailedUserDto);
+        detailedInterfaceDtoList.sort(Comparator.comparing(DetailedDtoInterface::getCreatedDateAndTime).reversed());
+        return  detailedInterfaceDtoList;
+    }
 
     @GetMapping("/kvitterList")
     public List<DetailedDtoInterface> getDynamicDetailedKvitterDtoList(@RequestParam(required = false) String userName, @RequestHeader("Authorization") String token) {

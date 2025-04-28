@@ -35,5 +35,7 @@ public interface KvitterRepo extends JpaRepository<Kvitter, UUID> {
     
     @Query(value = "SELECT * FROM Kvitter WHERE (user_id = :userId and is_active = true) ORDER BY created_date_and_time DESC", nativeQuery = true)
     List<Kvitter> findAllByLoggedInUser(@Param("userId") UUID userId);
-
+    
+    @Query(value = "SELECT DISTINCT k.* FROM Kvitter k LEFT JOIN kvitter_hashtags kv on k.id = kv.kvitter_id left join Hashtag h on h.id = kv.hashtag_id where (h.hashtag = :searched and k.is_private = false) OR (h.hashtag = :searched and k.is_private = true and k.user_id = :activeId)", nativeQuery = true)
+    List<Kvitter> searchByHashtag(@Param("searched") String searched,@Param("activeId") UUID activeId );
 }

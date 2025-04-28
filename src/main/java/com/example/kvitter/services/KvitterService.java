@@ -66,6 +66,23 @@ public class KvitterService {
             kvitterRepo.save(kvitter);
         }
     }
+
+    
+    //TODO TEST när jag lägger till mer cases
+    public List<DetailedDtoInterface> getSearchedKvitters(String category, String searched, DetailedUserDto detailedUserDto) {
+        User user = userRepo.findByEmail(detailedUserDto.getEmail());
+        List<DetailedDtoInterface> detailedInterfaceDtoList;
+        switch (category) {
+            case "hashtag":
+                detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.searchByHashtag(searched, user.getId()), user);
+                System.out.println(detailedInterfaceDtoList.size());
+                break;
+            default:
+                detailedInterfaceDtoList = new ArrayList<>();
+                break;
+        }
+        return detailedInterfaceDtoList;
+    }
     
 
     public List<DetailedDtoInterface> getFilteredKvitters(String userName, DetailedUserDto detailedUserDto) {

@@ -177,4 +177,24 @@ class KvitterServiceTests {
         assertTrue(result.get(0).getIsActive());
     }
 
+    @Test
+    void testGetSearchedKvitters_whenCategoryIsHashtag() {
+        String searchedHashtag = "testtag";
+        String category = "hashtag";
+
+        when(userRepo.findByEmail(anyString())).thenReturn(user);
+        when(kvitterRepo.searchByHashtag(eq(searchedHashtag), eq(user.getId()))).thenReturn(List.of(kvitter));
+        when(kvitterMapper.kvitterToDetailedKvitterDTO(any(Kvitter.class))).thenReturn(detailedKvitterDto);
+        
+        List<DetailedDtoInterface> result = kvitterService.getSearchedKvitters(category, searchedHashtag, detailedUserDto);
+        
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertTrue(result.get(0) instanceof DetailedKvitterDto);
+
+        verify(userRepo).findByEmail(eq(detailedUserDto.getEmail()));
+        verify(kvitterRepo).searchByHashtag(eq(searchedHashtag), eq(user.getId()));
+    }
+
+
 } 

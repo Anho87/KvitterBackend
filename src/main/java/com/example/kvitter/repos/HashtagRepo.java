@@ -21,6 +21,7 @@ public interface HashtagRepo extends JpaRepository<Hashtag, UUID> {
     @Query("DELETE FROM Hashtag h WHERE h.id = :Id")
     void deleteHashtagById(@Param("Id")UUID Id);
     
-    @Query(value = "SELECT * FROM Hashtag LIMIT 5", nativeQuery = true)
+    
+    @Query(value = "SELECT * FROM (SELECT DISTINCT ON (hashtag) * FROM hashtag ORDER BY hashtag, created_date_and_time DESC) AS sub ORDER BY created_date_and_time DESC LIMIT 5", nativeQuery = true)
     List<Hashtag> getFiveLastHashTags();
 }

@@ -7,11 +7,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "\"hashtag\"")
+@Table(name = "hashtag")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,6 +24,8 @@ public class Hashtag {
     private UUID id;
 
     private String hashtag;
+
+    private LocalDateTime createdDateAndTime;
     
     @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
@@ -35,4 +38,9 @@ public class Hashtag {
     public Hashtag(String hashtag) {
         this.hashtag = hashtag;
     }
+    public Hashtag(String hashtag, LocalDateTime localDateTime) {
+        this.hashtag = hashtag;
+        this.createdDateAndTime = localDateTime;
+    }
+    
 }
