@@ -36,23 +36,28 @@ public class KvitterController {
     }
 
     @GetMapping("/search")
-    public List<DetailedDtoInterface>getSearchedKvitterDtoList(@RequestParam(required = false) String category,@RequestParam(required = false)  String searched , @RequestHeader("Authorization") String token){
+    public List<DetailedDtoInterface> getSearchedKvitterDtoList(@RequestParam(required = true) String category, @RequestParam(required = true) String searched, @RequestHeader("Authorization") String token) {
         Authentication authentication = userAuthProvider.validateToken(token.replace("Bearer ", ""));
         DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
         List<DetailedDtoInterface> detailedInterfaceDtoList;
-        detailedInterfaceDtoList = kvitterService.getSearchedKvitters(category,searched, detailedUserDto);
+        detailedInterfaceDtoList = kvitterService.getSearchedKvitters(category, searched, detailedUserDto);
         detailedInterfaceDtoList.sort(Comparator.comparing(DetailedDtoInterface::getCreatedDateAndTime).reversed());
-        return  detailedInterfaceDtoList;
+        return detailedInterfaceDtoList;
     }
 
+    //TODO ändra test
     @GetMapping("/kvitterList")
-    public List<DetailedDtoInterface> getDynamicDetailedKvitterDtoList(@RequestParam(required = false) String userName, @RequestHeader("Authorization") String token) {
+    public List<DetailedDtoInterface> getDynamicDetailedKvitterDtoList(@RequestParam(required = true) String filterOption, @RequestParam(required = false) String userName, @RequestHeader("Authorization") String token) {
         Authentication authentication = userAuthProvider.validateToken(token.replace("Bearer ", ""));
         DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
         List<DetailedDtoInterface> detailedInterfaceDtoList = new ArrayList<>();
-        detailedInterfaceDtoList.addAll(rekvittService.getFilteredRekvitts(userName,detailedUserDto));
-        detailedInterfaceDtoList.addAll(kvitterService.getFilteredKvitters(userName, detailedUserDto));
-        detailedInterfaceDtoList.sort(Comparator.comparing(DetailedDtoInterface::getCreatedDateAndTime).reversed());
+        if (filterOption.equalsIgnoreCase("Following") || filterOption.equalsIgnoreCase("User-info") || filterOption.equalsIgnoreCase("MyActivity")) {
+            detailedInterfaceDtoList.addAll(rekvittService.getFilteredRekvitts(filterOption, userName, detailedUserDto));
+        }
+        detailedInterfaceDtoList.addAll(kvitterService.getFilteredKvitters(filterOption, userName, detailedUserDto));
+        if (!filterOption.equalsIgnoreCase("Popular")) {
+            detailedInterfaceDtoList.sort(Comparator.comparing(DetailedDtoInterface::getCreatedDateAndTime).reversed());
+        }
         return detailedInterfaceDtoList;
     }
 
@@ -65,8 +70,8 @@ public class KvitterController {
             throw new ExpiredTokenException("Access token expired", e);
         }
     }
-    
-    
+
+
     @GetMapping("/welcomePageKvitterList")
     public List<DetailedKvitterDto> getWelcomePageKvitter() {
         return kvitterService.getTenLatestKvitterThatIsNotPrivate();

@@ -96,144 +96,113 @@ public class RekvittIntegrationTests {
 
     @Test
     @Transactional
-    void testGetRekvittsWhenFollowingUser() {
-        User followedTargetUser = User.builder()
+    void testFindAllRekvittsByUserFollows() {
+        User followedUser = User.builder()
                 .userName("followeduser")
                 .password("password")
-                .email("followeduser@example.com")
+                .email("followed@example.com")
                 .following(new java.util.ArrayList<>())
                 .build();
-        userRepo.saveAndFlush(followedTargetUser);
+        userRepo.saveAndFlush(followedUser);
 
-        testUser.getFollowing().add(followedTargetUser);
+       
+        testUser.getFollowing().add(followedUser);
         userRepo.saveAndFlush(testUser);
 
-        Kvitter publicKvitter = Kvitter.builder()
-                .message("Public Kvitter from Followed User")
-                .user(followedTargetUser)
+       
+        Kvitter kvitter = Kvitter.builder()
+                .message("Kvitter from followed user")
+                .user(followedUser)
                 .createdDateAndTime(LocalDateTime.now())
                 .isPrivate(false)
                 .isActive(true)
                 .build();
-        Kvitter privateKvitter = Kvitter.builder()
-                .message("Private Kvitter from Followed User")
-                .user(followedTargetUser)
-                .createdDateAndTime(LocalDateTime.now())
-                .isPrivate(true)
-                .isActive(true)
-                .build();
-        kvitterRepo.saveAndFlush(publicKvitter);
-        kvitterRepo.saveAndFlush(privateKvitter);
+        kvitterRepo.saveAndFlush(kvitter);
 
-        Rekvitt publicRekvitt = Rekvitt.builder()
-                .user(followedTargetUser)
-                .originalKvitter(publicKvitter)
+        Rekvitt rekvitt = Rekvitt.builder()
+                .user(followedUser)
+                .originalKvitter(kvitter)
                 .createdDateAndTime(LocalDateTime.now())
                 .build();
-        rekvittRepo.saveAndFlush(publicRekvitt);
+        rekvittRepo.saveAndFlush(rekvitt);
 
-        User unfollowedNotTargetUser = User.builder()
+                User unfollowedNotTargetUser = User.builder()
                 .userName("unfolloweduser")
                 .password("password")
                 .email("unfolloweduser@example.com")
                 .following(new java.util.ArrayList<>())
                 .build();
         userRepo.saveAndFlush(unfollowedNotTargetUser);
-
-        Kvitter unfollowedUserKvitter = Kvitter.builder()
-                .message("Private Kvitter from Unfollowed User")
-                .user(unfollowedNotTargetUser)
-                .createdDateAndTime(LocalDateTime.now())
-                .isPrivate(false)
-                .isActive(true)
-                .build();
-        kvitterRepo.saveAndFlush(unfollowedUserKvitter);
+        
 
         Rekvitt unfollowedUserRekvitt = Rekvitt.builder()
                 .user(unfollowedNotTargetUser)
-                .originalKvitter(unfollowedUserKvitter)
+                .originalKvitter(kvitter)
                 .createdDateAndTime(LocalDateTime.now())
                 .build();
         rekvittRepo.saveAndFlush(unfollowedUserRekvitt);
 
         entityManager.clear();
 
-        List<Rekvitt> rekvitts = rekvittRepo.getRekvittsByFollowedByAndUser(testUser.getId());
+        List<Rekvitt> result = rekvittRepo.findAllRekvittsByUserFollows(testUser.getId());
 
-        assertThat(rekvitts).isNotEmpty();
-        assertThat(rekvitts).hasSize(1);
-        assertThat(rekvitts.stream().anyMatch(r -> r.getOriginalKvitter().getId().equals(publicKvitter.getId()))).isTrue();
-        assertThat(rekvitts.stream().noneMatch(r -> r.getOriginalKvitter().getIsPrivate().equals(true))).isTrue();
-        assertThat(rekvitts.stream().noneMatch(r -> r.getOriginalKvitter().getUser().getId().equals(unfollowedNotTargetUser.getId()))).isTrue();
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getUser().getId()).isEqualTo(followedUser.getId());
+        assertThat(result).isNotEmpty();
+        assertThat(result).hasSize(1);
+        assertThat(result.stream().anyMatch(r -> r.getOriginalKvitter().getId().equals(kvitter.getId()))).isTrue();
+        assertThat(result.stream().noneMatch(r -> r.getOriginalKvitter().getIsPrivate().equals(true))).isTrue();
+        assertThat(result.stream().noneMatch(r -> r.getOriginalKvitter().getUser().getId().equals(unfollowedNotTargetUser.getId()))).isTrue();
+    }
+
+    @Test
+    @Transactional
+    void testFindAllRekvittsByUserFollows_whenUserFollowsNoOne_returnsEmptyList() {
+    
+        User otherUser = User.builder()
+                .userName("otheruser")
+                .password("password")
+                .email("other@example.com")
+                .following(new java.util.ArrayList<>())
+                .build();
+        userRepo.saveAndFlush(otherUser);
+
+        Kvitter kvitter = Kvitter.builder()
+                .message("Kvitter from other user")
+                .user(otherUser)
+                .createdDateAndTime(LocalDateTime.now())
+                .isPrivate(false)
+                .isActive(true)
+                .build();
+        kvitterRepo.saveAndFlush(kvitter);
+
+        Rekvitt rekvitt = Rekvitt.builder()
+                .user(otherUser)
+                .originalKvitter(kvitter)
+                .createdDateAndTime(LocalDateTime.now())
+                .build();
+        rekvittRepo.saveAndFlush(rekvitt);
+
+        entityManager.clear();
+
+        List<Rekvitt> result = rekvittRepo.findAllRekvittsByUserFollows(testUser.getId());
+
+        assertThat(result).isEmpty();
     }
 
 
     @Test
     @Transactional
-    void testGetRekvittsWhenNotFollowingUser() {
-        User followedTargetUser = User.builder()
-                .userName("followeduser")
-                .password("password")
-                .email("followeduser@example.com")
-                .following(new java.util.ArrayList<>())
-                .build();
-        userRepo.saveAndFlush(followedTargetUser);
-        
-        Kvitter publicKvitter = Kvitter.builder()
-                .message("Public Kvitter from Followed User")
-                .user(followedTargetUser)
-                .createdDateAndTime(LocalDateTime.now())
-                .isPrivate(false)
-                .isActive(true)
-                .build();
-        Kvitter privateKvitter = Kvitter.builder()
-                .message("Private Kvitter from Followed User")
-                .user(followedTargetUser)
-                .createdDateAndTime(LocalDateTime.now())
-                .isPrivate(true)
-                .isActive(true)
-                .build();
-        kvitterRepo.saveAndFlush(publicKvitter);
-        kvitterRepo.saveAndFlush(privateKvitter);
-
-        Rekvitt publicRekvitt = Rekvitt.builder()
-                .user(followedTargetUser)
-                .originalKvitter(publicKvitter)
-                .createdDateAndTime(LocalDateTime.now())
-                .build();
-        rekvittRepo.saveAndFlush(publicRekvitt);
-
-        User unfollowedNotTargetUser = User.builder()
-                .userName("unfolloweduser")
-                .password("password")
-                .email("unfolloweduser@example.com")
-                .following(new java.util.ArrayList<>())
-                .build();
-        userRepo.saveAndFlush(unfollowedNotTargetUser);
-
-        Kvitter unfollowedUserKvitter = Kvitter.builder()
-                .message("Private Kvitter from Unfollowed User")
-                .user(unfollowedNotTargetUser)
-                .createdDateAndTime(LocalDateTime.now())
-                .isPrivate(false)
-                .isActive(true)
-                .build();
-        kvitterRepo.saveAndFlush(unfollowedUserKvitter);
-
-        Rekvitt unfollowedUserRekvitt = Rekvitt.builder()
-                .user(unfollowedNotTargetUser)
-                .originalKvitter(unfollowedUserKvitter)
-                .createdDateAndTime(LocalDateTime.now())
-                .build();
-        rekvittRepo.saveAndFlush(unfollowedUserRekvitt);
+    void testFindAllByUserId() {
+        Rekvitt rekvitt = createRekvitt(testUser, originalKvitter);
 
         entityManager.clear();
 
-        List<Rekvitt> rekvitts = rekvittRepo.getRekvittsByFollowedByAndUser(testUser.getId());
+        List<Rekvitt> result = rekvittRepo.findAllByUserId(testUser.getId());
 
-        assertThat(rekvitts).isEmpty();
-        assertThat(rekvitts).hasSize(0);
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getUser().getId()).isEqualTo(testUser.getId());
     }
-    
+
 }
 

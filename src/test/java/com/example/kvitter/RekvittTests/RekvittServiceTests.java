@@ -121,25 +121,11 @@ public class RekvittServiceTests {
     }
 
     @Test
-    void testGetFilteredRekvitts_whenTargetUserIsEmpty() {
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
-        when(rekvittRepo.getRekvittsByFollowedByAndUser(user.getId())).thenReturn(List.of(rekvitt));
-
-        DetailedRekvittDto dto = new DetailedRekvittDto();
-        dto.setOriginalKvitter(miniKvitterDto);
-        when(rekvittMapper.rekvittToDetailedRekvittDto(rekvitt)).thenReturn(dto);
-
-        var result = rekvittService.getFilteredRekvitts("anyUsername", detailedUserDto);
-
-        assertEquals(1, result.size());
-        verify(rekvittMapper).rekvittToDetailedRekvittDto(rekvitt);
-    }
-
-    @Test
-    void testGetFilteredRekvitts_whenTargetUserIsDifferent() {
+    void testGetFilteredRekvitts_caseUserInfo() {
         User targetUser = new User();
         targetUser.setId(UUID.randomUUID());
-        when(userRepo.findByEmail(detailedUserDto.getEmail())).thenReturn(user);
+
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
         when(userRepo.findByUserName("someoneElse")).thenReturn(Optional.of(targetUser));
         when(userMapper.optionalToUser(Optional.of(targetUser))).thenReturn(targetUser);
         when(rekvittRepo.findAllByUserId(targetUser.getId())).thenReturn(List.of(rekvitt));
@@ -148,9 +134,51 @@ public class RekvittServiceTests {
         dto.setOriginalKvitter(miniKvitterDto);
         when(rekvittMapper.rekvittToDetailedRekvittDto(rekvitt)).thenReturn(dto);
 
-        var result = rekvittService.getFilteredRekvitts("someoneElse", detailedUserDto);
+        var result = rekvittService.getFilteredRekvitts("User-Info", "someoneElse", detailedUserDto);
 
-        assertEquals(1, result.size(), "Expected result size to be 1");
-        verify(rekvittMapper).rekvittToDetailedRekvittDto(rekvitt);
+        assertEquals(1, result.size());
+        verify(rekvittRepo).findAllByUserId(targetUser.getId());
+    }
+
+    @Test
+    void testGetFilteredRekvitts_caseFollowing() {
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
+        when(rekvittRepo.findAllRekvittsByUserFollows(user.getId())).thenReturn(List.of(rekvitt));
+
+        DetailedRekvittDto dto = new DetailedRekvittDto();
+        dto.setOriginalKvitter(miniKvitterDto);
+        when(rekvittMapper.rekvittToDetailedRekvittDto(rekvitt)).thenReturn(dto);
+
+        var result = rekvittService.getFilteredRekvitts("Following", null, detailedUserDto);
+
+        assertEquals(1, result.size());
+        verify(rekvittRepo).findAllRekvittsByUserFollows(user.getId());
+    }
+
+    @Test
+    void testGetFilteredRekvitts_caseMyActivity() {
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
+        when(rekvittRepo.findAllByUserId(user.getId())).thenReturn(List.of(rekvitt));
+
+        DetailedRekvittDto dto = new DetailedRekvittDto();
+        dto.setOriginalKvitter(miniKvitterDto);
+        when(rekvittMapper.rekvittToDetailedRekvittDto(rekvitt)).thenReturn(dto);
+
+        var result = rekvittService.getFilteredRekvitts("MyActivity", null, detailedUserDto);
+
+        assertEquals(1, result.size());
+        verify(rekvittRepo).findAllByUserId(user.getId());
+    }
+
+    @Test
+    void testGetFilteredRekvitts_caseUserInfo_userNotFound() {
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
+        when(userRepo.findByUserName("nonexistent")).thenReturn(Optional.empty());
+
+        var result = rekvittService.getFilteredRekvitts("user-info", "nonexistent", detailedUserDto);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(rekvittRepo, never()).findAllByUserId(any());
     }
 }

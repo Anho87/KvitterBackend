@@ -45,7 +45,7 @@ public class KvitterService {
         UUID userId = detailedUserDto.getId();
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Stockholm"));
         Optional<User> optionalUser = userRepo.findById(userId);
-        User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
+        User user = optionalUser.orElseThrow(() -> new EntityNotFoundException("User not found"));
         Kvitter kvitter = Kvitter.builder().message(message).user(user).createdDateAndTime(now.toLocalDateTime()).hashtags(hashtagList).isPrivate(isPrivate).isActive(true).build();
         kvitterRepo.save(kvitter);
     }
@@ -60,22 +60,35 @@ public class KvitterService {
         }
         if (kvitter.getReplies().isEmpty() && kvitter.getRekvitts().isEmpty()) {
             kvitterRepo.deleteKvitterById(uuid);
-        }else {
+        } else {
             kvitter.setMessage("Deleted...");
             kvitter.setIsActive(false);
             kvitterRepo.save(kvitter);
         }
     }
 
-    
-    //TODO TEST när jag lägger till mer cases
     public List<DetailedDtoInterface> getSearchedKvitters(String category, String searched, DetailedUserDto detailedUserDto) {
+        String toLowerCaseSearchedWord = searched.toLowerCase();
         User user = userRepo.findByEmail(detailedUserDto.getEmail());
-        List<DetailedDtoInterface> detailedInterfaceDtoList;
+        Optional<User> optionalUser = userRepo.findByUserName(toLowerCaseSearchedWord);
+        User targetUser = userMapper.optionalToUser(optionalUser);
+        List<DetailedDtoInterface> detailedInterfaceDtoList = new ArrayList<>();
         switch (category) {
             case "hashtag":
-                detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.searchByHashtag(searched, user.getId()), user);
+                detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.searchByHashtag(toLowerCaseSearchedWord, user.getId()), user);
                 System.out.println(detailedInterfaceDtoList.size());
+                break;
+            case "user":
+                if (optionalUser.isPresent()) {
+                    if (targetUser.getId() != user.getId()) {
+                        detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.findAllByTargetUser(targetUser.getId(), user.getId()), user);
+                    } else {
+                        detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.findAllByLoggedInUser(user.getId()), user);
+                    }
+                }
+                break;
+            case "message":
+                detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.findAllByMessageContainsIgnoreCaseAndIsPrivate(toLowerCaseSearchedWord, false), user);
                 break;
             default:
                 detailedInterfaceDtoList = new ArrayList<>();
@@ -83,22 +96,43 @@ public class KvitterService {
         }
         return detailedInterfaceDtoList;
     }
-    
 
-    public List<DetailedDtoInterface> getFilteredKvitters(String userName, DetailedUserDto detailedUserDto) {
+    
+    public List<DetailedDtoInterface> getFilteredKvitters(String filterOption, String userName, DetailedUserDto detailedUserDto) {
+        System.out.println("filterOption: " + filterOption);
+        System.out.println("username: " + userName);
+        String toLowerCaseFilterOption = filterOption.toLowerCase();
         User user = userRepo.findByEmail(detailedUserDto.getEmail());
         Optional<User> optionalUser = userRepo.findByUserName(userName);
         User targetUser = userMapper.optionalToUser(optionalUser);
-        List<DetailedDtoInterface> detailedInterfaceDtoList;
-        if (optionalUser.isEmpty()) {
-            System.out.println("Fetching all kvitters, including private ones for followers of logged-in user");
-            detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.getDynamicKvitterList(user.getId()),user);
-        } else if (targetUser.getId() != user.getId()) {
-            System.out.println("Fetching kvitters for target user by logged-in user");
-            detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.findAllByTargetUser(targetUser.getId(), user.getId()),user);
-        } else {
-            System.out.println("Fetching kvitters for logged-in user");
-            detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.findAllByLoggedInUser(user.getId()), user);
+        List<DetailedDtoInterface> detailedInterfaceDtoList = new ArrayList<>();
+        switch (toLowerCaseFilterOption) {
+            case "popular":
+                System.out.println("Fetching kvitters for popular");
+                detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.findMostPopularKvitter(user.getId()), user);
+                break;
+            case "following":
+                System.out.println("Fetching kvitters for following");
+                detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.findAllByUserFollows(user.getId()), user);
+                break;
+            case "latest":
+                System.out.println("Fetching kvitters for latest, including private ones for followers of logged-in user");
+                detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.getLatestKvitters(user.getId()),user);
+                break;
+            case "user-info":
+                System.out.println("Fetching kvitters for user-info page");
+                if (optionalUser.isPresent()) {
+                        System.out.println("Fetching kvitters for target user by logged-in user");
+                        detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.findAllByTargetUser(targetUser.getId(), user.getId()), user);
+                }
+                break;
+            case "myactivity":
+                System.out.println("Fetching kvitters for logged in user");
+                detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.findAllByLoggedInUser(user.getId()), user);
+                break;
+            default:
+                detailedInterfaceDtoList = new ArrayList<>();
+                break;
         }
         return detailedInterfaceDtoList;
     }
@@ -106,18 +140,18 @@ public class KvitterService {
     private List<DetailedDtoInterface> mapToInterfaceDtoList(List<Kvitter> kvitterList, User user) {
         return kvitterList.stream().map(kvitter -> {
             DetailedKvitterDto dto = kvitterMapper.kvitterToDetailedKvitterDTO(kvitter);
-            
+
             dto.setIsFollowing(user.getFollowing().contains(kvitter.getUser()));
             dto.setIsLiked(user.getLikes().contains(kvitter));
-            
+
             List<DetailedReplyDto> replyDtos = mapReplies(kvitter.getReplies(), user);
             dto.setReplies(replyDtos);
-            
+
             return dto;
         }).collect(Collectors.toList());
     }
 
-  
+
     private List<DetailedReplyDto> mapReplies(List<Reply> replies, User user) {
         return replies.stream().map(reply -> {
             DetailedReplyDto replyDto = replyMapper.replyToDetailedReplyDTO(reply);
@@ -131,7 +165,7 @@ public class KvitterService {
             return replyDto;
         }).toList();
     }
-    
+
 
     private List<DetailedKvitterDto> mapToDetailedKvitterDtoList(List<Kvitter> kvitterList) {
         return kvitterList.stream().map(kvitterMapper::kvitterToDetailedKvitterDTO).collect(Collectors.toList());

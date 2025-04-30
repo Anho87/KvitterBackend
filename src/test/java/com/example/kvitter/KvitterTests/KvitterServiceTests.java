@@ -111,57 +111,6 @@ class KvitterServiceTests {
         assertEquals("Deleted...", kvitter.getMessage());
         verify(kvitterRepo).save(kvitter);
     }
-
-    @Test
-    void testGetFilteredKvitters_whenTargetUserIsEmpty() {
-        List<Kvitter> kvitterList = List.of(kvitter);
-        
-        when(userRepo.findByEmail("test@example.com")).thenReturn(user);
-        when(userRepo.findByUserName("nonexistent")).thenReturn(Optional.empty());
-        when(kvitterRepo.getDynamicKvitterList(user.getId())).thenReturn(kvitterList);
-        when(kvitterMapper.kvitterToDetailedKvitterDTO(any())).thenReturn(detailedKvitterDto);
-
-        List<DetailedDtoInterface> result = kvitterService.getFilteredKvitters("nonexistent", detailedUserDto);
-
-        assertEquals(1, result.size());
-        assertTrue(result.get(0) instanceof DetailedKvitterDto);
-    }
-
-    @Test
-    void testGetFilteredKvitters_whenTargetUserIsDifferent() {
-        User targetUser = new User();
-        targetUser.setId(UUID.randomUUID()); 
-        
-        List<Kvitter> kvitterList = List.of(kvitter);
-
-        when(userRepo.findByEmail("test@example.com")).thenReturn(user);
-        when(userRepo.findByUserName("someoneElse")).thenReturn(Optional.of(targetUser));
-        when(userMapper.optionalToUser(Optional.of(targetUser))).thenReturn(targetUser);
-        when(kvitterRepo.findAllByTargetUser(targetUser.getId(), user.getId())).thenReturn(kvitterList);
-        when(kvitterMapper.kvitterToDetailedKvitterDTO(any())).thenReturn(detailedKvitterDto);
-
-        List<DetailedDtoInterface> result = kvitterService.getFilteredKvitters("someoneElse", detailedUserDto);
-
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    void testGetFilteredKvitters_whenTargetUserIsSameAsLoggedIn() {
-        User targetUser = new User();
-        targetUser.setId(user.getId());
-
-        List<Kvitter> kvitterList = List.of(kvitter);
-
-        when(userRepo.findByEmail("test@example.com")).thenReturn(user);
-        when(userRepo.findByUserName("sameUser")).thenReturn(Optional.of(targetUser));
-        when(userMapper.optionalToUser(Optional.of(targetUser))).thenReturn(targetUser);
-        when(kvitterRepo.findAllByLoggedInUser(targetUser.getId())).thenReturn(kvitterList);
-        when(kvitterMapper.kvitterToDetailedKvitterDTO(any())).thenReturn(detailedKvitterDto);
-
-        List<DetailedDtoInterface> result = kvitterService.getFilteredKvitters("sameUser", detailedUserDto);
-
-        assertEquals(1, result.size());
-    }
     
     @Test
     void testGetTenLatestKvitterThatIsNotPrivate() {
@@ -195,6 +144,104 @@ class KvitterServiceTests {
         verify(userRepo).findByEmail(eq(detailedUserDto.getEmail()));
         verify(kvitterRepo).searchByHashtag(eq(searchedHashtag), eq(user.getId()));
     }
+
+    @Test
+    void testGetSearchedKvitters_whenCategoryIsUser() {
+        String searchedUser = "testuser";
+
+        when(userRepo.findByEmail(anyString())).thenReturn(user);
+        when(userRepo.findByUserName(eq(searchedUser))).thenReturn(Optional.of(user));
+        when(userMapper.optionalToUser(any())).thenReturn(user);
+        when(kvitterRepo.findAllByLoggedInUser(eq(user.getId()))).thenReturn(List.of(kvitter));
+        when(kvitterMapper.kvitterToDetailedKvitterDTO(any(Kvitter.class))).thenReturn(detailedKvitterDto);
+
+        List<DetailedDtoInterface> result = kvitterService.getSearchedKvitters("user", searchedUser, detailedUserDto);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertTrue(result.get(0) instanceof DetailedKvitterDto);
+
+        verify(userRepo).findByUserName(eq(searchedUser));
+        verify(kvitterRepo).findAllByLoggedInUser(eq(user.getId()));
+    }
+
+    @Test
+    void testGetSearchedKvitters_whenCategoryIsMessage() {
+        String searchedMessage = "hello";
+
+        when(userRepo.findByEmail(anyString())).thenReturn(user);
+        when(kvitterRepo.findAllByMessageContainsIgnoreCaseAndIsPrivate(eq(searchedMessage), eq(false))).thenReturn(List.of(kvitter));
+        when(kvitterMapper.kvitterToDetailedKvitterDTO(any(Kvitter.class))).thenReturn(detailedKvitterDto);
+
+        List<DetailedDtoInterface> result = kvitterService.getSearchedKvitters("message", searchedMessage, detailedUserDto);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertTrue(result.get(0) instanceof DetailedKvitterDto);
+
+        verify(kvitterRepo).findAllByMessageContainsIgnoreCaseAndIsPrivate(eq(searchedMessage), eq(false));
+    }
+
+    @Test
+    void testGetFilteredKvitters_Popular() {
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
+        when(kvitterRepo.findMostPopularKvitter(user.getId())).thenReturn(List.of(kvitter));
+        when(kvitterMapper.kvitterToDetailedKvitterDTO(kvitter)).thenReturn(detailedKvitterDto);
+
+        List<DetailedDtoInterface> result = kvitterService.getFilteredKvitters("popular", "ignored", detailedUserDto);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testGetFilteredKvitters_Following() {
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
+        when(kvitterRepo.findAllByUserFollows(user.getId())).thenReturn(List.of(kvitter));
+        when(kvitterMapper.kvitterToDetailedKvitterDTO(kvitter)).thenReturn(detailedKvitterDto);
+
+        List<DetailedDtoInterface> result = kvitterService.getFilteredKvitters("following", "ignored", detailedUserDto);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testGetFilteredKvitters_Latest() {
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
+        when(kvitterRepo.getLatestKvitters(user.getId())).thenReturn(List.of(kvitter));
+        when(kvitterMapper.kvitterToDetailedKvitterDTO(kvitter)).thenReturn(detailedKvitterDto);
+
+        List<DetailedDtoInterface> result = kvitterService.getFilteredKvitters("latest", "ignored", detailedUserDto);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testGetFilteredKvitters_UserInfo() {
+        User targetUser = new User();
+        targetUser.setId(UUID.randomUUID());
+
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
+        when(userRepo.findByUserName("target")).thenReturn(Optional.of(targetUser));
+        when(userMapper.optionalToUser(Optional.of(targetUser))).thenReturn(targetUser);
+        when(kvitterRepo.findAllByTargetUser(targetUser.getId(), user.getId())).thenReturn(List.of(kvitter));
+        when(kvitterMapper.kvitterToDetailedKvitterDTO(kvitter)).thenReturn(detailedKvitterDto);
+
+        List<DetailedDtoInterface> result = kvitterService.getFilteredKvitters("user-info", "target", detailedUserDto);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testGetFilteredKvitters_MyActivity() {
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
+        when(kvitterRepo.findAllByLoggedInUser(user.getId())).thenReturn(List.of(kvitter));
+        when(kvitterMapper.kvitterToDetailedKvitterDTO(kvitter)).thenReturn(detailedKvitterDto);
+
+        List<DetailedDtoInterface> result = kvitterService.getFilteredKvitters("myactivity", "ignored", detailedUserDto);
+
+        assertEquals(1, result.size());
+    }
+
 
 
 } 

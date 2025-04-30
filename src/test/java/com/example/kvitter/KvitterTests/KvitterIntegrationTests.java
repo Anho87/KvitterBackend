@@ -105,7 +105,7 @@ public class KvitterIntegrationTests {
 
     @Test
     @Transactional
-    void testGetDynamicKvitterList() {
+    void testGetLatestKvitters() {
         User followedUser = User.builder()
                 .userName("followeduser")
                 .password("password")
@@ -147,7 +147,7 @@ public class KvitterIntegrationTests {
 
         entityManager.clear();
 
-        List<Kvitter> kvitterList = kvitterRepo.getDynamicKvitterList(activeUser.getId());
+        List<Kvitter> kvitterList = kvitterRepo.getLatestKvitters(activeUser.getId());
 
         assertThat(kvitterList).isNotEmpty();
         assertThat(kvitterList.stream().anyMatch(k -> k.getId().equals(publicKvitter.getId()))).isTrue();
@@ -410,6 +410,160 @@ public class KvitterIntegrationTests {
         assertThat(foundIds).doesNotContain(privateKvitterOtherUser.getId());
 
     }
+
+    @Test
+    @Transactional
+    void testFindAllByMessageContainsIgnoreCaseAndIsPrivate() {
+        createKvitter("Hello World", false);
+        createKvitter("Another hello", false);
+        createKvitter("Completely different message", false);
+        createKvitter("Private message hello", true);
+
+        entityManager.clear();
+
+        List<Kvitter> foundKvitter = kvitterRepo.findAllByMessageContainsIgnoreCaseAndIsPrivate("hello", false);
+
+        assertThat(foundKvitter).hasSize(2);
+        assertThat(foundKvitter.stream().anyMatch(k -> k.getMessage().contains("Hello World"))).isTrue();
+        assertThat(foundKvitter.stream().anyMatch(k -> k.getMessage().contains("Another hello"))).isTrue();
+        assertThat(foundKvitter.stream().noneMatch(k -> k.getMessage().contains("Completely different message"))).isTrue();
+        assertThat(foundKvitter.stream().noneMatch(k -> k.getMessage().contains("Private message hello"))).isTrue();
+        assertThat(foundKvitter.stream().allMatch(k -> k.getIsPrivate().equals(false))).isTrue();
+        assertThat(foundKvitter.stream().noneMatch(k -> k.getIsPrivate().equals(true))).isTrue();
+    }
+
+    @Test
+    @Transactional
+    void testFindAllByUserFollows() {
+        User followedUser = User.builder()
+                .userName("followeduser")
+                .password("password")
+                .email("followed@example.com")
+                .following(new ArrayList<>())
+                .build();
+        userRepo.saveAndFlush(followedUser);
+
+        activeUser.getFollowing().add(followedUser);
+        userRepo.saveAndFlush(activeUser);
+
+        Kvitter kvitter = Kvitter.builder()
+                .message("Followed user post")
+                .user(followedUser)
+                .createdDateAndTime(LocalDateTime.now())
+                .isPrivate(false)
+                .isActive(true)
+                .build();
+        kvitterRepo.saveAndFlush(kvitter);
+
+        entityManager.clear();
+
+        List<Kvitter> result = kvitterRepo.findAllByUserFollows(activeUser.getId());
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getUser().getId()).isEqualTo(followedUser.getId());
+    }
+    @Test
+    @Transactional
+    void testFindAllByUserFollows_WhenUserFollowsNoOne() {
+        User notFollowedUser = User.builder()
+                .userName("followeduser")
+                .password("password")
+                .email("followed@example.com")
+                .following(new ArrayList<>())
+                .build();
+        userRepo.saveAndFlush(notFollowedUser);
+
+
+        Kvitter kvitter = Kvitter.builder()
+                .message("Followed user post")
+                .user(notFollowedUser)
+                .createdDateAndTime(LocalDateTime.now())
+                .isPrivate(false)
+                .isActive(true)
+                .build();
+        kvitterRepo.saveAndFlush(kvitter);
+
+        entityManager.clear();
+
+        List<Kvitter> result = kvitterRepo.findAllByUserFollows(activeUser.getId());
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    @Transactional
+    void testFindMostPopularKvitter() {
+        Kvitter kvitter = createKvitter("Popular one", false);
+        kvitter.setLikes(new ArrayList<>());
+        kvitter.getLikes().add(activeUser);
+        activeUser.getLikes().add(kvitter);
+        userRepo.saveAndFlush(activeUser);
+        kvitterRepo.saveAndFlush(kvitter);
+
+        entityManager.clear();
+
+        List<Kvitter> result = kvitterRepo.findMostPopularKvitter(activeUser.getId());
+
+        assertThat(result).isNotEmpty();
+        assertThat(result.stream().anyMatch(k -> k.getMessage().equals("Popular one"))).isTrue();
+    }
+
+    @Test
+    @Transactional
+    void testFindMostPopularKvitter_WhenNoLikes() {
+        User notFollowedUser = User.builder()
+                .userName("followeduser")
+                .password("password")
+                .email("followed@example.com")
+                .following(new ArrayList<>())
+                .build();
+        userRepo.saveAndFlush(notFollowedUser);
+
+
+        Kvitter kvitter = Kvitter.builder()
+                .message("Followed user post")
+                .user(notFollowedUser)
+                .createdDateAndTime(LocalDateTime.now())
+                .isPrivate(false)
+                .isActive(true)
+                .build();
+        kvitterRepo.saveAndFlush(kvitter);
+
+        entityManager.clear();
+
+        List<Kvitter> result = kvitterRepo.findMostPopularKvitter(activeUser.getId());
+
+        assertThat(result).isEmpty(); 
+    }
+
+    @Test
+    @Transactional
+    void testFindMostPopularKvitter_PrivateKvitterShouldBeHidden() {
+        User otherUser = User.builder()
+                .userName("privateowner")
+                .email("private@example.com")
+                .password("pass")
+                .build();
+        userRepo.saveAndFlush(otherUser);
+
+        Kvitter privateKvitter = Kvitter.builder()
+                .message("Private and popular")
+                .user(otherUser)
+                .createdDateAndTime(LocalDateTime.now())
+                .isPrivate(true)
+                .isActive(true)
+                .build();
+        kvitterRepo.saveAndFlush(privateKvitter);
+        
+        userRepo.saveAndFlush(otherUser);
+
+        entityManager.clear();
+
+        List<Kvitter> result = kvitterRepo.findMostPopularKvitter(activeUser.getId());
+
+        assertThat(result).noneMatch(k -> k.getId().equals(privateKvitter.getId()));
+    }
+
 
 
 }

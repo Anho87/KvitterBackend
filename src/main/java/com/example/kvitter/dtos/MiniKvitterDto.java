@@ -24,6 +24,7 @@ public class MiniKvitterDto {
     private List<MiniHashtagDto> hashtags = new ArrayList<>();
     private Boolean isPrivate;
     private Boolean isActive;
+    private List<MiniUserDto> likes = new ArrayList<>();
     private Boolean isFollowing;
     private Boolean isLiked;
    
