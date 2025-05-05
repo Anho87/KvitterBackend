@@ -10,9 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -25,13 +28,7 @@ class KvitterControllerTest {
 
     @Mock
     private RekvittService rekvittService;
-
-    @Mock
-    private UserAuthProvider userAuthProvider;
-
-    @Mock
-    private Authentication authentication;
-
+    
     @InjectMocks
     private KvitterController kvitterController;
 
@@ -50,35 +47,60 @@ class KvitterControllerTest {
     void testPostKvitter() {
         KvitterRequest request = new KvitterRequest("Test message", List.of("tag1", "tag2"), false);
         String token = "Bearer faketoken";
+        
+        doNothing().when(kvitterService).addKvitter(eq(request), eq(token));
 
-        when(userAuthProvider.validateTokenStrongly("faketoken")).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(detailedUserDto);
+        ResponseEntity<Map<String, String>> response = kvitterController.postKvitter(request, token);
 
-        kvitterController.postKvitter(request, token);
+        verify(kvitterService).addKvitter(eq(request), eq(token));
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getBody()).containsEntry("message", "Kvitter posted!");
+    }
 
-        verify(kvitterService).addKvitter(eq("Test message"), eq(List.of("tag1", "tag2")), eq(false), eq(detailedUserDto));
+    @Test
+    void testRemoveKvitter() {
+        RemoveKvitterRequest request = new RemoveKvitterRequest(UUID.randomUUID().toString());
+        String token = "Bearer faketoken";
+        
+
+        ResponseEntity<Map<String, String>> response = kvitterController.removeKvitter(request, token);
+
+        verify(kvitterService).removeKvitter(eq(request.id()), eq(token));
+        assertThat(response.getBody()).containsEntry("message", "Kvitter deleted!");
     }
 
     @Test
     void testGetSearchedKvitterDtoList() {
         String token = "Bearer faketoken";
+        List<DetailedDtoInterface> mockResult = new ArrayList<>();
 
-        when(userAuthProvider.validateToken("faketoken")).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(detailedUserDto);
-        when(kvitterService.getSearchedKvitters(anyString(), anyString(), any())).thenReturn(new java.util.ArrayList<>());
-
+        when(kvitterService.getSearchedKvitters("hashtag", "test", token)).thenReturn(mockResult);
 
         List<DetailedDtoInterface> result = kvitterController.getSearchedKvitterDtoList("hashtag", "test", token);
 
-        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo(mockResult);
+        verify(kvitterService).getSearchedKvitters("hashtag", "test", token);
     }
+
+    @Test
+    void testGetSearchedKvitterDtoList_withUnknownCategory() {
+        String token = "Bearer faketoken";
+
+        when(kvitterService.getSearchedKvitters("unknown", "searchterm", token)).thenReturn(List.of());
+
+        List<DetailedDtoInterface> result = kvitterController.getSearchedKvitterDtoList("unknown", "searchterm", token);
+
+        assertThat(result).isEmpty();
+        verify(kvitterService).getSearchedKvitters("unknown", "searchterm", token);
+    }
+
+
 
     @Test
     void testGetDynamicDetailedKvitterDtoList() {
         String token = "Bearer faketoken";
 
-        when(userAuthProvider.validateToken("faketoken")).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(detailedUserDto);
+   
         when(rekvittService.getFilteredRekvitts(anyString(), anyString(), any())).thenReturn(List.of());
         when(kvitterService.getFilteredKvitters(anyString(), anyString(), any())).thenReturn(List.of());
 
@@ -88,15 +110,6 @@ class KvitterControllerTest {
     }
 
 
-    @Test
-    void testRemoveKvitter() {
-        RemoveKvitterRequest request = new RemoveKvitterRequest(UUID.randomUUID().toString());
-        String token = "Bearer faketoken";
-
-        kvitterController.removeKvitter(request, token);
-
-        verify(kvitterService).removeKvitter(eq(request.id()));
-    }
 
     @Test
     void testGetWelcomePageKvitter() {

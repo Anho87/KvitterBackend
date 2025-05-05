@@ -7,6 +7,7 @@ import com.example.kvitter.entities.User;
 import com.example.kvitter.repos.KvitterRepo;
 import com.example.kvitter.repos.ReplyRepo;
 import com.example.kvitter.repos.UserRepo;
+import com.example.kvitter.services.AuthService;
 import com.example.kvitter.services.ReplyService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,8 @@ public class ReplyServiceTests {
     private UserRepo userRepo;
     @Mock
     private KvitterRepo kvitterRepo;
+    @Mock
+    private AuthService authService;
     @InjectMocks
     private ReplyService replyService;
 
@@ -54,69 +57,83 @@ public class ReplyServiceTests {
 
         userDto = new DetailedUserDto();
         userDto.setId(userId);
+        
     }
 
     @Test
     void testAddReply_ToKvitter() {
+        String token = "Bearer faketoken";
+        when(authService.getUserFromToken(token)).thenReturn(userDto);
+        
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(kvitterRepo.findById(kvitterId)).thenReturn(Optional.of(kvitter));
 
-        replyService.addReply("This is a reply", kvitterId, null, userDto);
+        replyService.addReply("This is a reply", kvitterId, null, token);
 
         verify(replyRepo, times(1)).save(any(Reply.class));
     }
 
     @Test
     void testAddReply_ToParentReply() {
+        String token = "Bearer faketoken";
+        when(authService.getUserFromToken(token)).thenReturn(userDto);
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(replyRepo.findById(replyId)).thenReturn(Optional.of(parentReply));
 
-        replyService.addReply("Nested reply", null, replyId, userDto);
+        replyService.addReply("Nested reply", null, replyId, token);
 
         verify(replyRepo).save(argThat(reply -> reply.getParentReply() != null && reply.getParentReply().getId().equals(replyId)));
     }
 
     @Test
     void testAddReply_UserNotFound() {
+        String token = "Bearer faketoken";
+        when(authService.getUserFromToken(token)).thenReturn(userDto);
         when(userRepo.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () ->
-                replyService.addReply("Reply text", kvitterId, null, userDto));
+                replyService.addReply("Reply text", kvitterId, null, token));
     }
 
     @Test
     void testAddReply_KvitterNotFound() {
+        String token = "Bearer faketoken";
+        when(authService.getUserFromToken(token)).thenReturn(userDto);
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(kvitterRepo.findById(kvitterId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () ->
-                replyService.addReply("Reply text", kvitterId, null, userDto));
+                replyService.addReply("Reply text", kvitterId, null, token));
     }
 
     @Test
     void testAddReply_ParentReplyNotFound() {
+        String token = "Bearer faketoken";
+        when(authService.getUserFromToken(token)).thenReturn(userDto);
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(replyRepo.findById(replyId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () ->
-                replyService.addReply("Reply text", null, replyId, userDto));
+                replyService.addReply("Reply text", null, replyId, token));
     }
 
     @Test
     void testRemoveReply_NoReplies_Delete() {
+        String token = "Bearer faketoken";
         Reply reply = new Reply();
         reply.setId(replyId);
         reply.setReplies(Collections.emptyList());
 
         when(replyRepo.findById(replyId)).thenReturn(Optional.of(reply));
 
-        replyService.removeReply(replyId.toString());
+        replyService.removeReply(replyId.toString(), token);
 
         verify(replyRepo).deleteReplyById(replyId);
     }
 
     @Test
     void testRemoveReply_WithReplies_SoftDelete() {
+        String token = "Bearer faketoken";
         Reply reply = new Reply();
         reply.setId(replyId);
         reply.setMessage("Original Message");
@@ -125,7 +142,7 @@ public class ReplyServiceTests {
 
         when(replyRepo.findById(replyId)).thenReturn(Optional.of(reply));
 
-        replyService.removeReply(replyId.toString());
+        replyService.removeReply(replyId.toString(), token);
 
         assertFalse(reply.getIsActive());
         assertEquals("Deleted...", reply.getMessage());
@@ -134,9 +151,10 @@ public class ReplyServiceTests {
 
     @Test
     void testRemoveReply_NotFound() {
+        String token = "Bearer faketoken";
         when(replyRepo.findById(replyId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () ->
-                replyService.removeReply(replyId.toString()));
+                replyService.removeReply(replyId.toString(), token));
     }
 }

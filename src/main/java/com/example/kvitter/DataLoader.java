@@ -49,21 +49,21 @@ public class DataLoader implements CommandLineRunner {
         if (insertDummyData) {
             if (userRepo.count() == 0) {
 
-                DetailedUserDto mario = userService.register(new SignUpDto("mario.bros@nintendo.com", "mario", new char[]{'i', 't', 's', 'a', 'm', 'e', '1', '2', '3'}));
-                DetailedUserDto lara = userService.register(new SignUpDto("lara.croft@tombraider.com", "lara croft", new char[]{'r', 'a', 'i', 'd', 'e', 'r', '4', '5', '6'}));
-                DetailedUserDto chief = userService.register(new SignUpDto("master.chief@halo.com", "master chief", new char[]{'s', 'p', 'a', 'r', 't', 'a', 'n', '1', '1', '7'}));
-                DetailedUserDto kratos = userService.register(new SignUpDto("kratos.godofwar@ps.com", "kratos godofwar", new char[]{'b', 'l', 'a', 'd', 'e', 's', '7', '8', '9'}));
-                DetailedUserDto link = userService.register(new SignUpDto("link.hero@hyrule.com", "link", new char[]{'t', 'r', 'i', 'f', 'o', 'r', 'c', 'e', '1', '2', '3'}));
-                DetailedUserDto wick = userService.register(new SignUpDto("john.wick@continental.com", "john wick", new char[]{'p', 'u', 'p', 'p', 'y', '4', '5', '6'}));
-                DetailedUserDto tony = userService.register(new SignUpDto("tony.stark@avengers.com", "tony stark", new char[]{'i', 'r', 'o', 'n', 'm', 'a', 'n', '7', '8', '9'}));
-                DetailedUserDto bruce = userService.register(new SignUpDto("bruce.wayne@gotham.com", "bruce wayne", new char[]{'b', 'a', 't', 'm', 'a', 'n', '1', '2', '3'}));
-                DetailedUserDto cloud = userService.register(new SignUpDto("cloud.strife@ffvii.com", "cloud strife", new char[]{'b', 'u', 's', 't', 'e', 'r', '4', '5', '6'}));
-                DetailedUserDto geralt = userService.register(new SignUpDto("geralt.rivia@witcher.com", "geralt", new char[]{'s', 'i', 'l', 'v', 'e', 'r', '7', '8', '9'}));
-                DetailedUserDto arthur = userService.register(new SignUpDto("arthur.morgan@rdr2.com", "arthur morgan", new char[]{'o', 'u', 't', 'l', 'a', 'w', '1', '2', '3'}));
-                DetailedUserDto joel = userService.register(new SignUpDto("joel.miller@tlou.com", "joel miller", new char[]{'g', 'u', 'i', 't', 'a', 'r', '4', '5', '6'}));
-                DetailedUserDto ellie = userService.register(new SignUpDto("ellie.williams@tlou.com", "ellie williams", new char[]{'c', 'l', 'i', 'c', 'k', 'e', 'r', '7', '8', '9'}));
-                DetailedUserDto sarah = userService.register(new SignUpDto("sarah.connor@terminator.com", "sarah connor", new char[]{'r', 'e', 's', 'i', 's', 't', 'a', 'n', 'c', 'e', '1', '2', '3'}));
-                DetailedUserDto neo = userService.register(new SignUpDto("neo.matrix@zion.com", "neo", new char[]{'r', 'e', 'd', 'p', 'i', 'l', 'l', '4', '5', '6'}));
+                DetailedUserDto mario = userService.register(new SignUpDto("mario.bros@nintendo.com", "Mario", new char[]{'i', 't', 's', 'a', 'm', 'e', '1', '2', '3'}));
+                DetailedUserDto lara = userService.register(new SignUpDto("lara.croft@tombraider.com", "Lara Croft", new char[]{'r', 'a', 'i', 'd', 'e', 'r', '4', '5', '6'}));
+                DetailedUserDto chief = userService.register(new SignUpDto("master.chief@halo.com", "Master Chief", new char[]{'s', 'p', 'a', 'r', 't', 'a', 'n', '1', '1', '7'}));
+                DetailedUserDto kratos = userService.register(new SignUpDto("kratos.godofwar@ps.com", "Kratos GodOfWar", new char[]{'b', 'l', 'a', 'd', 'e', 's', '7', '8', '9'}));
+                DetailedUserDto link = userService.register(new SignUpDto("link.hero@hyrule.com", "Link", new char[]{'t', 'r', 'i', 'f', 'o', 'r', 'c', 'e', '1', '2', '3'}));
+                DetailedUserDto wick = userService.register(new SignUpDto("john.wick@continental.com", "John Wick", new char[]{'p', 'u', 'p', 'p', 'y', '4', '5', '6'}));
+                DetailedUserDto tony = userService.register(new SignUpDto("tony.stark@avengers.com", "Tony Stark", new char[]{'i', 'r', 'o', 'n', 'm', 'a', 'n', '7', '8', '9'}));
+                DetailedUserDto bruce = userService.register(new SignUpDto("bruce.wayne@gotham.com", "Bruce Wayne", new char[]{'b', 'a', 't', 'm', 'a', 'n', '1', '2', '3'}));
+                DetailedUserDto cloud = userService.register(new SignUpDto("cloud.strife@ffvii.com", "Cloud Strife", new char[]{'b', 'u', 's', 't', 'e', 'r', '4', '5', '6'}));
+                DetailedUserDto geralt = userService.register(new SignUpDto("geralt.rivia@witcher.com", "Geralt", new char[]{'s', 'i', 'l', 'v', 'e', 'r', '7', '8', '9'}));
+                DetailedUserDto arthur = userService.register(new SignUpDto("arthur.morgan@rdr2.com", "Arthur Morgan", new char[]{'o', 'u', 't', 'l', 'a', 'w', '1', '2', '3'}));
+                DetailedUserDto joel = userService.register(new SignUpDto("joel.miller@tlou.com", "Joel Miller", new char[]{'g', 'u', 'i', 't', 'a', 'r', '4', '5', '6'}));
+                DetailedUserDto ellie = userService.register(new SignUpDto("ellie.williams@tlou.com", "Ellie Williams", new char[]{'c', 'l', 'i', 'c', 'k', 'e', 'r', '7', '8', '9'}));
+                DetailedUserDto sarah = userService.register(new SignUpDto("sarah.connor@terminator.com", "Sarah Connor", new char[]{'r', 'e', 's', 'i', 's', 't', 'a', 'n', 'c', 'e', '1', '2', '3'}));
+                DetailedUserDto neo = userService.register(new SignUpDto("neo.matrix@zion.com", "Neo", new char[]{'r', 'e', 'd', 'p', 'i', 'l', 'l', '4', '5', '6'}));
 
 
                 Hashtag hashtag0 = hashtagService.addHashTag("Gamin");
@@ -85,7 +85,9 @@ public class DataLoader implements CommandLineRunner {
 
                 LocalDateTime localDateTime = LocalDateTime.now();
 
-                Kvitter kvitter1 = Kvitter.builder().message("Just defeated Bowser again. It's-a me, Mario! 🍄").user(userMapper.detailedUserDTOToUser(mario)).createdDateAndTime(localDateTime).hashtags(Arrays.asList(hashtag1, hashtag0)).isPrivate(true).isActive(true).build();
+                Kvitter kvitter1 = Kvitter.builder().message("Just defeated Bowser again. It's-a me, Mario! 🍄")
+                        .user(userMapper.detailedUserDTOToUser(mario)).createdDateAndTime(localDateTime)
+                        .hashtags(Arrays.asList(hashtag1, hashtag0)).isPrivate(true).isActive(true).build();
                 kvitterRepo.save(kvitter1);
 
                 Kvitter kvitter2 = Kvitter.builder().message("Saved the Mushroom Kingdom once again! Now, time for spaghetti. 🍝")

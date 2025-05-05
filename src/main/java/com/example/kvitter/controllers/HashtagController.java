@@ -18,12 +18,9 @@ import java.util.List;
 public class HashtagController {
     
     private final HashtagService hashtagService;
-    private final UserAuthProvider userAuthProvider;
     
     @GetMapping("/trendingHashtags")
     public List<MiniHashtagDto> getTrendingHashtags(@RequestHeader("Authorization") String token){
-        Authentication authentication = userAuthProvider.validateToken(token.replace("Bearer ", ""));
-        DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
-        return hashtagService.getTrendingHashtags();
+        return hashtagService.getTrendingHashtags(token);
     }
 }

@@ -36,9 +36,11 @@ public class RekvittService {
     private final RekvittMapper rekvittMapper;
     private final UserRepo userRepo;
     private final UserMapper userMapper;
+    private final AuthService authService;
 
-    public void addRekvitt(String kvitterId, DetailedUserDto detailedUserDto) {
-        User user = userRepo.findByEmail(detailedUserDto.getEmail());
+    public void addRekvitt(String kvitterId, String token) {
+        DetailedUserDto detailedUserDto = authService.getUserFromToken(token);
+        User user = userRepo.findByEmailIgnoreCase(detailedUserDto.getEmail());
         UUID uuid = UUID.fromString(kvitterId);
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Stockholm"));
         Kvitter kvitter = kvitterRepo.findById(uuid)
@@ -53,24 +55,25 @@ public class RekvittService {
                     .build();
             rekvittRepo.save(rekvitt);
         } else {
-            throw new AppException("User already rekvitted this kvitter", HttpStatus.BAD_REQUEST);
+            throw new AppException("You have already rekvitted this kvitter!", HttpStatus.BAD_REQUEST);
         }
     }
 
-    public void removeRekvitt(String rekvittId) {
+    public void removeRekvitt(String rekvittId, String token) {
+        authService.getUserFromToken(token);
         UUID uuid = UUID.fromString(rekvittId);
         Rekvitt rekvitt = rekvittRepo.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Rekvitt not found"));
         rekvittRepo.deleteRekvittByById(rekvitt.getId());
     }
-
-    //TODO ändra tester
-    public List<DetailedDtoInterface> getFilteredRekvitts(String filterOption, String userName, DetailedUserDto detailedUserDto) {
+    
+    public List<DetailedDtoInterface> getFilteredRekvitts(String filterOption, String userName, String token) {
         System.out.println("filterOption: " + filterOption);
         System.out.println("username: " + userName);
+        DetailedUserDto detailedUserDto = authService.getUserFromToken(token);
         String toLowerCaseFilterOption = filterOption.toLowerCase();
-        User user = userRepo.findByEmail(detailedUserDto.getEmail());
-        Optional<User> optionalUser = userRepo.findByUserName(userName);
+        User user = userRepo.findByEmailIgnoreCase(detailedUserDto.getEmail());
+        Optional<User> optionalUser = userRepo.findByUserNameIgnoreCase(userName);
         User targetUser = userMapper.optionalToUser(optionalUser);
         List<DetailedDtoInterface> detailedInterfaceDtoList = new ArrayList<>();
         switch (toLowerCaseFilterOption) {

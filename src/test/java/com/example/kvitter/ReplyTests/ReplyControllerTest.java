@@ -56,7 +56,7 @@ class ReplyControllerTest {
                 eq("Test reply message"),
                 eq(request.kvitterId()),
                 eq(request.parentReplyId()),
-                eq(detailedUserDto)
+                eq(token)
         );
     }
 
@@ -65,8 +65,8 @@ class ReplyControllerTest {
         RemoveKvitterRequest request = new RemoveKvitterRequest(UUID.randomUUID().toString());
         String token = "Bearer faketoken";
 
-        replyController.removeKvitter(request, token);
+        replyController.removeReply(request, token);
 
-        verify(replyService).removeReply(eq(request.id()));
+        verify(replyService).removeReply(eq(request.id()), eq(token));
     }
 }

@@ -6,72 +6,52 @@ import com.example.kvitter.exceptions.ExpiredTokenException;
 import com.example.kvitter.services.KvitterService;
 import com.example.kvitter.services.RekvittService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
 public class KvitterController {
 
     private final KvitterService kvitterService;
-    private final UserAuthProvider userAuthProvider;
     private final RekvittService rekvittService;
 
+
     @PostMapping("/postKvitter")
-    public void postKvitter(@RequestBody KvitterRequest request, @RequestHeader("Authorization") String token) {
-        try {
-            String message = request.message();
-            List<String> hashtags = request.hashtags();
-            Boolean isPrivate = request.isPrivate();
-            Authentication authentication = userAuthProvider.validateTokenStrongly(token.replace("Bearer ", ""));
-            DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
-            kvitterService.addKvitter(message, hashtags, isPrivate, detailedUserDto);
-        } catch (ExpiredTokenException e) {
-            throw new ExpiredTokenException("Access token expired", e);
-        }
+    public ResponseEntity<Map<String, String>> postKvitter(@RequestBody KvitterRequest request, @RequestHeader("Authorization") String token) {
+        kvitterService.addKvitter(request, token);
+        return ResponseEntity.ok(Collections.singletonMap("message", "Kvitter posted!"));
+    }
+
+    @DeleteMapping("/removeKvitter")
+    public ResponseEntity<Map<String, String>> removeKvitter(@RequestBody RemoveKvitterRequest request, @RequestHeader("Authorization") String token) {
+        kvitterService.removeKvitter(request.id(), token);
+        return ResponseEntity.ok(Collections.singletonMap("message", "Kvitter deleted!"));
     }
 
     @GetMapping("/search")
     public List<DetailedDtoInterface> getSearchedKvitterDtoList(@RequestParam(required = true) String category, @RequestParam(required = true) String searched, @RequestHeader("Authorization") String token) {
-        Authentication authentication = userAuthProvider.validateToken(token.replace("Bearer ", ""));
-        DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
-        List<DetailedDtoInterface> detailedInterfaceDtoList;
-        detailedInterfaceDtoList = kvitterService.getSearchedKvitters(category, searched, detailedUserDto);
-        detailedInterfaceDtoList.sort(Comparator.comparing(DetailedDtoInterface::getCreatedDateAndTime).reversed());
-        return detailedInterfaceDtoList;
+        return kvitterService.getSearchedKvitters(category, searched, token);
     }
 
-    //TODO ändra test
+
     @GetMapping("/kvitterList")
     public List<DetailedDtoInterface> getDynamicDetailedKvitterDtoList(@RequestParam(required = true) String filterOption, @RequestParam(required = false) String userName, @RequestHeader("Authorization") String token) {
-        Authentication authentication = userAuthProvider.validateToken(token.replace("Bearer ", ""));
-        DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
         List<DetailedDtoInterface> detailedInterfaceDtoList = new ArrayList<>();
         if (filterOption.equalsIgnoreCase("Following") || filterOption.equalsIgnoreCase("User-info") || filterOption.equalsIgnoreCase("MyActivity")) {
-            detailedInterfaceDtoList.addAll(rekvittService.getFilteredRekvitts(filterOption, userName, detailedUserDto));
+            detailedInterfaceDtoList.addAll(rekvittService.getFilteredRekvitts(filterOption, userName, token));
         }
-        detailedInterfaceDtoList.addAll(kvitterService.getFilteredKvitters(filterOption, userName, detailedUserDto));
+        detailedInterfaceDtoList.addAll(kvitterService.getFilteredKvitters(filterOption, userName, token));
         if (!filterOption.equalsIgnoreCase("Popular")) {
             detailedInterfaceDtoList.sort(Comparator.comparing(DetailedDtoInterface::getCreatedDateAndTime).reversed());
         }
         return detailedInterfaceDtoList;
     }
-
-    @DeleteMapping("/removeKvitter")
-    public void removeKvitter(@RequestBody RemoveKvitterRequest request, @RequestHeader("Authorization") String token) {
-        try {
-            String id = request.id();
-            kvitterService.removeKvitter(id);
-        } catch (ExpiredTokenException e) {
-            throw new ExpiredTokenException("Access token expired", e);
-        }
-    }
-
-
+    
     @GetMapping("/welcomePageKvitterList")
     public List<DetailedKvitterDto> getWelcomePageKvitter() {
         return kvitterService.getTenLatestKvitterThatIsNotPrivate();

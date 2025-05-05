@@ -79,7 +79,7 @@ public class UserAuthProvider {
                 throw new ExpiredTokenException("Access token expired");
             }
 
-            User user = userRepo.findByUserName(decoded.getIssuer())
+            User user = userRepo.findByUserNameIgnoreCase(decoded.getIssuer())
                     .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
 
             return new UsernamePasswordAuthenticationToken(userMapper.userToDetailedUserDTO(user), null, Collections.emptyList());

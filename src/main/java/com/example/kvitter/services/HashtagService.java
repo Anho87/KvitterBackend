@@ -1,11 +1,14 @@
 package com.example.kvitter.services;
 
+import com.example.kvitter.configs.UserAuthProvider;
 import com.example.kvitter.dtos.DetailedHashtagDto;
+import com.example.kvitter.dtos.DetailedUserDto;
 import com.example.kvitter.dtos.MiniHashtagDto;
 import com.example.kvitter.entities.Hashtag;
 import com.example.kvitter.mappers.HashtagMapper;
 import com.example.kvitter.repos.HashtagRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
@@ -20,19 +23,19 @@ public class HashtagService {
     
     private final HashtagRepo hashtagRepo;
     private final HashtagMapper hashtagMapper;
+    private final AuthService authService;
 
 
 
     public Hashtag addHashTag(String hashtag) {
-        String lowerCaseHashtag = hashtag.toLowerCase();
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Stockholm"));
-        Hashtag newHashtag = new Hashtag(lowerCaseHashtag,now.toLocalDateTime());
+        Hashtag newHashtag = new Hashtag(hashtag,now.toLocalDateTime());
         return hashtagRepo.save(newHashtag);
     }
     
-    //TODO skriv test när klar
-    public List<MiniHashtagDto> getTrendingHashtags(){
-        System.out.println("Fetching trending hashtags");
+   
+    public List<MiniHashtagDto> getTrendingHashtags(String token){
+        authService.getUserFromToken(token);
         return mapHashtags(hashtagRepo.getFiveLastHashTags());
     }
     

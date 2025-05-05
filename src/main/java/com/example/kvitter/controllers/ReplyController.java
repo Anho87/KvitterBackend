@@ -7,9 +7,12 @@ import com.example.kvitter.dtos.ReplyRequestDto;
 import com.example.kvitter.exceptions.ExpiredTokenException;
 import com.example.kvitter.services.ReplyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -17,29 +20,16 @@ import java.util.UUID;
 public class ReplyController {
     
     private final ReplyService replyService;
-    private final UserAuthProvider userAuthProvider;
     
     @PostMapping("/postReply")
-    public void postReply(@RequestBody ReplyRequestDto request, @RequestHeader("Authorization") String token){
-        try{
-            String message = request.message();
-            UUID kvitterId = request.kvitterId();
-            UUID parentReplyId = request.parentReplyId();
-            Authentication authentication = userAuthProvider.validateTokenStrongly(token.replace("Bearer ", ""));
-            DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
-            replyService.addReply(message,kvitterId,parentReplyId,detailedUserDto);
-        }  catch (ExpiredTokenException e) {
-            throw new ExpiredTokenException("Access token expired", e);
-        }
+    public ResponseEntity<Map<String, String>> postReply(@RequestBody ReplyRequestDto request, @RequestHeader("Authorization") String token){
+        replyService.addReply(request.message(),request.kvitterId(),request.parentReplyId(),token);
+        return ResponseEntity.ok(Collections.singletonMap("message", "Reply posted!"));
     }
 
     @DeleteMapping("/removeReply")
-    public void removeKvitter(@RequestBody RemoveKvitterRequest request, @RequestHeader("Authorization") String token) {
-        try {
-            String id = request.id();
-            replyService.removeReply(id);
-        } catch (ExpiredTokenException e) {
-            throw new ExpiredTokenException("Access token expired", e);
-        }
+    public ResponseEntity<Map<String, String>> removeReply(@RequestBody RemoveKvitterRequest request, @RequestHeader("Authorization") String token) {
+            replyService.removeReply(request.id(), token);
+        return ResponseEntity.ok(Collections.singletonMap("message", "Reply deleted!"));
     }
 }

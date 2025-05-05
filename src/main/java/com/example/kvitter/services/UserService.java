@@ -1,6 +1,5 @@
 package com.example.kvitter.services;
 
-import com.example.kvitter.configs.UserAuthProvider;
 import com.example.kvitter.dtos.CredentialsDto;
 import com.example.kvitter.dtos.SignUpDto;
 import com.example.kvitter.dtos.DetailedUserDto;
@@ -15,7 +14,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +30,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final KvitterRepo kvitterRepo;
+    private final AuthService authService;
     
     public DetailedUserDto login(CredentialsDto credentialsDTO){
-        User user = userRepo.findByUserName(credentialsDTO.userName())
+        User user = userRepo.findByUserNameIgnoreCase(credentialsDTO.userName())
                 .orElseThrow(() -> new AppException("Unkown user", HttpStatus.NOT_FOUND));
         
         if(passwordEncoder.matches(CharBuffer.wrap(credentialsDTO.password()),
@@ -46,8 +45,8 @@ public class UserService {
     }
     
     public DetailedUserDto register(SignUpDto signUpDto){
-        Optional<User> oUser = userRepo.findByUserName(signUpDto.userName());
-        User checkMail = userRepo.findByEmail(signUpDto.email());
+        Optional<User> oUser = userRepo.findByUserNameIgnoreCase(signUpDto.userName());
+        User checkMail = userRepo.findByEmailIgnoreCase(signUpDto.email());
         
         if (oUser.isPresent()){
             throw new AppException("Username already exists", HttpStatus.BAD_REQUEST);
@@ -64,9 +63,10 @@ public class UserService {
     }
     
    
-    public void followUser(String email, DetailedUserDto detailedUserDto){
-        User toBeFollowedUser = userRepo.findByEmail(email);
-        User wantToFollowUser = userRepo.findByEmail(detailedUserDto.getEmail());
+    public void followUser(String email, String token){
+        DetailedUserDto detailedUserDto = authService.getUserFromToken(token);
+        User toBeFollowedUser = userRepo.findByEmailIgnoreCase(email);
+        User wantToFollowUser = userRepo.findByEmailIgnoreCase(detailedUserDto.getEmail());
         boolean userExists = wantToFollowUser.getFollowing().stream().anyMatch(user -> user.getId() == toBeFollowedUser.getId());
         if(!userExists){
             wantToFollowUser.getFollowing().add(toBeFollowedUser);
@@ -77,9 +77,10 @@ public class UserService {
     }
     
   
-    public void unFollowUser(String email, DetailedUserDto detailedUserDto) {
-        User toBeUnFollowedUser = userRepo.findByEmail(email);
-        User wantToUnFollowUser = userRepo.findByEmail(detailedUserDto.getEmail());
+    public void unFollowUser(String email, String token) {
+        DetailedUserDto detailedUserDto = authService.getUserFromToken(token);
+        User toBeUnFollowedUser = userRepo.findByEmailIgnoreCase(email);
+        User wantToUnFollowUser = userRepo.findByEmailIgnoreCase(detailedUserDto.getEmail());
         boolean userExists = wantToUnFollowUser.getFollowing().stream().anyMatch(user -> user.getId() == toBeUnFollowedUser.getId());
         if (userExists){
             System.out.println("User: " + wantToUnFollowUser.getUserName() + " is unfollowing: " + toBeUnFollowedUser.getUserName());
@@ -92,11 +93,12 @@ public class UserService {
     }
     
     
-    public void upvoteKvitter(String kvitterId, DetailedUserDto detailedUserDto){
+    public void upvoteKvitter(String kvitterId, String token){
+        DetailedUserDto detailedUserDto = authService.getUserFromToken(token);
         UUID uuid = UUID.fromString(kvitterId);
         Kvitter kvitter = kvitterRepo.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Kvitter not found"));
-        User user = userRepo.findByEmail(detailedUserDto.getEmail());
+        User user = userRepo.findByEmailIgnoreCase(detailedUserDto.getEmail());
         boolean alreadyUpvoted = user.getLikes().stream().anyMatch(kvitterInList -> kvitterInList.getId() == kvitter.getId());
         if (!alreadyUpvoted){
         user.getLikes().add(kvitter);
@@ -107,11 +109,12 @@ public class UserService {
     }
 
  
-    public void removeUpvoteOnKvitter(String kvitterId, DetailedUserDto detailedUserDto){
+    public void removeUpvoteOnKvitter(String kvitterId, String token){
+        DetailedUserDto detailedUserDto = authService.getUserFromToken(token);
         UUID uuid = UUID.fromString(kvitterId);
         Kvitter kvitter = kvitterRepo.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Kvitter not found"));
-        User user = userRepo.findByEmail(detailedUserDto.getEmail());
+        User user = userRepo.findByEmailIgnoreCase(detailedUserDto.getEmail());
         boolean alreadyUpvoted = user.getLikes().stream().anyMatch(kvitterInList -> kvitterInList.getId() == kvitter.getId());
         if (alreadyUpvoted){
         user.getLikes().remove(kvitter);

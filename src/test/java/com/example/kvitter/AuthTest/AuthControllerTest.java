@@ -18,7 +18,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
@@ -64,11 +63,10 @@ class AuthControllerTest {
     @Test
     void testLogin() {
         CredentialsDto credentials = new CredentialsDto("testuser", "password".toCharArray());
+        Map<String, Object> mockResponse = Map.of("user", detailedUserDto, "accessToken", "token");
 
+        when(refreshTokenService.buildAuthResponseWithTokens(any())).thenReturn(ResponseEntity.ok(mockResponse));
         when(userService.login(any())).thenReturn(detailedUserDto);
-        when(userAuthProvider.createToken(any())).thenReturn("access-token");
-        when(refreshTokenService.checkIfUserHasActiveRefreshToken(any())).thenReturn(false);
-        when(refreshTokenService.createRefreshToken(any())).thenReturn(refreshToken);
 
         ResponseEntity<Map<String, Object>> response = authController.login(credentials);
 
@@ -79,11 +77,10 @@ class AuthControllerTest {
     @Test
     void testRegister() {
         SignUpDto signUpDto = new SignUpDto("test@example.com", "testuser", "password".toCharArray());
+        Map<String, Object> mockResponse = Map.of("user", detailedUserDto, "accessToken", "token");
 
+        when(refreshTokenService.buildAuthResponseWithTokens(any())).thenReturn(ResponseEntity.ok(mockResponse));
         when(userService.register(any())).thenReturn(detailedUserDto);
-        when(userAuthProvider.createToken(any())).thenReturn("access-token");
-        when(refreshTokenService.checkIfUserHasActiveRefreshToken(any())).thenReturn(false);
-        when(refreshTokenService.createRefreshToken(any())).thenReturn(refreshToken);
 
         ResponseEntity<Map<String, Object>> response = authController.register(signUpDto);
 
@@ -93,20 +90,17 @@ class AuthControllerTest {
 
     @Test
     void testLogout() {
-        when(refreshTokenService.getUserFromRefreshToken(any())).thenReturn(user);
+        when(refreshTokenService.logout("refresh-token")).thenReturn(ResponseEntity.ok().build());
 
         ResponseEntity<Void> response = authController.logout("refresh-token");
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        verify(refreshTokenService).removeAllUserTokens(user.getId());
     }
 
     @Test
     void testRefreshAccessToken_success() {
-        when(refreshTokenService.verifyRefreshToken(any())).thenReturn(refreshToken);
-        when(refreshTokenService.getUserFromRefreshToken(any())).thenReturn(user);
-        when(userMapper.userToDetailedUserDTO(any())).thenReturn(detailedUserDto);
-        when(userAuthProvider.createToken(any())).thenReturn("new-access-token");
+        Map<String, String> responseMap = Map.of("accessToken", "new-token");
+        when(refreshTokenService.refreshAccessToken("refresh-token")).thenReturn(ResponseEntity.ok(responseMap));
 
         ResponseEntity<Map<String, String>> response = authController.refreshAccessToken("refresh-token");
 
@@ -116,9 +110,13 @@ class AuthControllerTest {
 
     @Test
     void testRefreshAccessToken_missingToken() {
+        Map<String, String> errorMap = Map.of("error", "Refresh token is missing.");
+        when(refreshTokenService.refreshAccessToken("")).thenReturn(ResponseEntity.status(403).body(errorMap));
+
         ResponseEntity<Map<String, String>> response = authController.refreshAccessToken("");
 
         assertThat(response.getStatusCodeValue()).isEqualTo(403);
         assertThat(response.getBody()).containsEntry("error", "Refresh token is missing.");
     }
+
 }

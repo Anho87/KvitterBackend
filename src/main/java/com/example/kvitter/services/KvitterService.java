@@ -1,13 +1,11 @@
 package com.example.kvitter.services;
 
-import com.example.kvitter.dtos.DetailedDtoInterface;
-import com.example.kvitter.dtos.DetailedReplyDto;
-import com.example.kvitter.dtos.DetailedUserDto;
+import com.example.kvitter.dtos.*;
 import com.example.kvitter.entities.Hashtag;
-import com.example.kvitter.dtos.DetailedKvitterDto;
 import com.example.kvitter.entities.Kvitter;
 
 import com.example.kvitter.entities.Reply;
+import com.example.kvitter.exceptions.AppException;
 import com.example.kvitter.mappers.KvitterMapper;
 import com.example.kvitter.mappers.ReplyMapper;
 import com.example.kvitter.mappers.UserMapper;
@@ -17,6 +15,7 @@ import com.example.kvitter.repos.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
@@ -34,23 +33,29 @@ public class KvitterService {
     private final HashtagService hashtagService;
     private final UserMapper userMapper;
     private final ReplyMapper replyMapper;
+    private final AuthService authService;
+    
+    public void addKvitter(KvitterRequest request, String token) {
+        DetailedUserDto detailedUserDto = authService.getUserFromToken(token);
 
-
-    public void addKvitter(String message, List<String> hashtags, Boolean isPrivate, DetailedUserDto detailedUserDto) {
-        List<Hashtag> hashtagList = new ArrayList<>();
-        for (String hashtag : hashtags) {
-            Hashtag tempHashtag = hashtagService.addHashTag(hashtag);
-            hashtagList.add(tempHashtag);
+        if (request.message() == null || request.message().isBlank()) {
+            throw new AppException("Message can't be empty.", HttpStatus.BAD_REQUEST);
         }
+        
+        List<Hashtag> hashtagList = request.hashtags().stream()
+                .map(hashtagService::addHashTag)
+                .toList();
+        
         UUID userId = detailedUserDto.getId();
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Stockholm"));
         Optional<User> optionalUser = userRepo.findById(userId);
         User user = optionalUser.orElseThrow(() -> new EntityNotFoundException("User not found"));
-        Kvitter kvitter = Kvitter.builder().message(message).user(user).createdDateAndTime(now.toLocalDateTime()).hashtags(hashtagList).isPrivate(isPrivate).isActive(true).build();
+        Kvitter kvitter = Kvitter.builder().message(request.message()).user(user).createdDateAndTime(now.toLocalDateTime()).hashtags(hashtagList).isPrivate(request.isPrivate()).isActive(true).build();
         kvitterRepo.save(kvitter);
     }
 
-    public void removeKvitter(String id) {
+    public void removeKvitter(String id, String token) {
+        authService.getUserFromToken(token);
         UUID uuid = UUID.fromString(id);
         Kvitter kvitter = kvitterRepo.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Kvitter not found"));
@@ -67,16 +72,16 @@ public class KvitterService {
         }
     }
 
-    public List<DetailedDtoInterface> getSearchedKvitters(String category, String searched, DetailedUserDto detailedUserDto) {
-        String toLowerCaseSearchedWord = searched.toLowerCase();
-        User user = userRepo.findByEmail(detailedUserDto.getEmail());
-        Optional<User> optionalUser = userRepo.findByUserName(toLowerCaseSearchedWord);
+   
+    public List<DetailedDtoInterface> getSearchedKvitters(String category, String searched, String token) {
+        DetailedUserDto detailedUserDto = authService.getUserFromToken(token);
+        User user = userRepo.findByEmailIgnoreCase(detailedUserDto.getEmail());
+        Optional<User> optionalUser = userRepo.findByUserNameIgnoreCase(searched);
         User targetUser = userMapper.optionalToUser(optionalUser);
         List<DetailedDtoInterface> detailedInterfaceDtoList = new ArrayList<>();
         switch (category) {
             case "hashtag":
-                detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.searchByHashtag(toLowerCaseSearchedWord, user.getId()), user);
-                System.out.println(detailedInterfaceDtoList.size());
+                detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.searchByHashtag(searched, user.getId()), user);
                 break;
             case "user":
                 if (optionalUser.isPresent()) {
@@ -88,25 +93,26 @@ public class KvitterService {
                 }
                 break;
             case "message":
-                detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.findAllByMessageContainsIgnoreCaseAndIsPrivate(toLowerCaseSearchedWord, false), user);
+                detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.findAllByMessageContainsIgnoreCaseAndIsPrivate(searched, false), user);
                 break;
             default:
                 detailedInterfaceDtoList = new ArrayList<>();
                 break;
         }
+        detailedInterfaceDtoList.sort(Comparator.comparing(DetailedDtoInterface::getCreatedDateAndTime).reversed());
         return detailedInterfaceDtoList;
     }
 
     
-    public List<DetailedDtoInterface> getFilteredKvitters(String filterOption, String userName, DetailedUserDto detailedUserDto) {
+    public List<DetailedDtoInterface> getFilteredKvitters(String filterOption, String userName, String token) {
         System.out.println("filterOption: " + filterOption);
         System.out.println("username: " + userName);
-        String toLowerCaseFilterOption = filterOption.toLowerCase();
-        User user = userRepo.findByEmail(detailedUserDto.getEmail());
-        Optional<User> optionalUser = userRepo.findByUserName(userName);
+        DetailedUserDto detailedUserDto = authService.getUserFromToken(token);
+        User user = userRepo.findByEmailIgnoreCase(detailedUserDto.getEmail());
+        Optional<User> optionalUser = userRepo.findByUserNameIgnoreCase(userName);
         User targetUser = userMapper.optionalToUser(optionalUser);
         List<DetailedDtoInterface> detailedInterfaceDtoList = new ArrayList<>();
-        switch (toLowerCaseFilterOption) {
+        switch (filterOption.toLowerCase()) {
             case "popular":
                 System.out.println("Fetching kvitters for popular");
                 detailedInterfaceDtoList = mapToInterfaceDtoList(kvitterRepo.findMostPopularKvitter(user.getId()), user);

@@ -49,7 +49,7 @@ class UserControllerTest {
 
         userController.followUser(request, token);
 
-        verify(userService).followUser(eq("targetuser@example.com"), eq(detailedUserDto));
+        verify(userService).followUser(eq("targetuser@example.com"), eq(token));
     }
 
     @Test
@@ -62,7 +62,7 @@ class UserControllerTest {
 
         userController.unFollowUser(request, token);
 
-        verify(userService).unFollowUser(eq("targetuser@example.com"), eq(detailedUserDto));
+        verify(userService).unFollowUser(eq("targetuser@example.com"), eq(token));
     }
 
     @Test
@@ -75,7 +75,7 @@ class UserControllerTest {
 
         userController.upvoteKvitter(request, token);
 
-        verify(userService).upvoteKvitter(eq("kvitterId123"), eq(detailedUserDto));
+        verify(userService).upvoteKvitter(eq("kvitterId123"), eq(token));
     }
 
     @Test
@@ -88,7 +88,7 @@ class UserControllerTest {
 
         userController.removeUpvoteOnKvitter(request, token);
 
-        verify(userService).removeUpvoteOnKvitter(eq("kvitterId123"), eq(detailedUserDto));
+        verify(userService).removeUpvoteOnKvitter(eq("kvitterId123"), eq(token));
     }
 }
 

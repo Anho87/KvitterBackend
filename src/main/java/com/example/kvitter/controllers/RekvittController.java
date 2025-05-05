@@ -7,38 +7,30 @@ import com.example.kvitter.dtos.RemoveRekvittRequestDto;
 import com.example.kvitter.exceptions.ExpiredTokenException;
 import com.example.kvitter.services.RekvittService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 public class RekvittController {
-    
+
     private final UserAuthProvider userAuthProvider;
     private final RekvittService rekvittService;
-    
-    
+
+
     @PostMapping("/postRekvitt")
-    public void postRekvitt(@RequestBody RekvittRequestDto request, @RequestHeader("Authorization") String token){
-        try{
-            String kvitterId = request.kvitterId();
-            Authentication authentication = userAuthProvider.validateTokenStrongly(token.replace("Bearer ", ""));
-            DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
-            rekvittService.addRekvitt(kvitterId, detailedUserDto);
-        } catch (ExpiredTokenException e) {
-            throw new ExpiredTokenException("Access token expired", e);
-        }
+    public ResponseEntity<Map<String, String>> postRekvitt(@RequestBody RekvittRequestDto request, @RequestHeader("Authorization") String token) {
+        rekvittService.addRekvitt(request.kvitterId(), token);
+        return ResponseEntity.ok(Collections.singletonMap("message", "Rekvitt posted!"));
     }
     
     @DeleteMapping("/removeRekvitt")
-    public void removeRekvitt(@RequestBody RemoveRekvittRequestDto request, @RequestHeader("Authorization") String token){
-        try{
-            String rekvittId = request.rekvittId();
-            Authentication authentication = userAuthProvider.validateTokenStrongly(token.replace("Bearer ", ""));
-            DetailedUserDto detailedUserDto = (DetailedUserDto) authentication.getPrincipal();
-            rekvittService.removeRekvitt(rekvittId);
-        }catch (ExpiredTokenException e) {
-            throw new ExpiredTokenException("Access token expired", e);
-        }
+    public ResponseEntity<Map<String, String>> removeRekvitt(@RequestBody RemoveRekvittRequestDto request, @RequestHeader("Authorization") String token) {
+        rekvittService.removeRekvitt(request.rekvittId(), token);
+        return ResponseEntity.ok(Collections.singletonMap("message", "Rekvitt deleted!"));
     }
 }

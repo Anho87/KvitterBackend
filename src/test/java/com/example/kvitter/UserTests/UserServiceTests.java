@@ -9,6 +9,7 @@ import com.example.kvitter.exceptions.AppException;
 import com.example.kvitter.mappers.UserMapper;
 import com.example.kvitter.repos.KvitterRepo;
 import com.example.kvitter.repos.UserRepo;
+import com.example.kvitter.services.AuthService;
 import com.example.kvitter.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.nio.CharBuffer;
@@ -43,6 +43,9 @@ class UserServiceTests {
     @Mock
     private KvitterRepo kvitterRepo;
 
+    @Mock
+    private AuthService authService;
+
     @InjectMocks
     private UserService userService;
 
@@ -66,7 +69,7 @@ class UserServiceTests {
 
     @Test
     void login_ValidCredentials_ReturnsUser() {
-        when(userRepo.findByUserName(credentialsDto.userName())).thenReturn(Optional.of(user));
+        when(userRepo.findByUserNameIgnoreCase(credentialsDto.userName())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(CharBuffer.wrap(credentialsDto.password()), user.getPassword())).thenReturn(true);
         when(userMapper.userToDetailedUserDTO(user)).thenReturn(detailedUserDto);
 
@@ -78,7 +81,7 @@ class UserServiceTests {
 
     @Test
     void login_InvalidPassword_ThrowsException() {
-        when(userRepo.findByUserName(credentialsDto.userName())).thenReturn(Optional.of(user));
+        when(userRepo.findByUserNameIgnoreCase(credentialsDto.userName())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(CharBuffer.wrap(credentialsDto.password()), user.getPassword())).thenReturn(false);
 
         AppException exception = assertThrows(AppException.class, () -> userService.login(credentialsDto));
@@ -87,7 +90,7 @@ class UserServiceTests {
 
     @Test
     void login_UnknownUser_ThrowsException() {
-        when(userRepo.findByUserName(credentialsDto.userName())).thenReturn(Optional.empty());
+        when(userRepo.findByUserNameIgnoreCase(credentialsDto.userName())).thenReturn(Optional.empty());
 
         AppException exception = assertThrows(AppException.class, () -> userService.login(credentialsDto));
         assertEquals("Unkown user", exception.getMessage());
@@ -95,7 +98,7 @@ class UserServiceTests {
 
     @Test
     void register_NewUser_ReturnsUser() {
-        when(userRepo.findByUserName(signUpDto.userName())).thenReturn(Optional.empty());
+        when(userRepo.findByUserNameIgnoreCase(signUpDto.userName())).thenReturn(Optional.empty());
         when(userMapper.signUpToUser(signUpDto)).thenReturn(user);
         when(passwordEncoder.encode(CharBuffer.wrap(signUpDto.password()))).thenReturn("encodedpassword");
         when(userRepo.save(any(User.class))).thenReturn(user);
@@ -109,7 +112,7 @@ class UserServiceTests {
 
     @Test
     void register_ExistingUser_ThrowsException() {
-        when(userRepo.findByUserName(signUpDto.userName())).thenReturn(Optional.of(user));
+        when(userRepo.findByUserNameIgnoreCase(signUpDto.userName())).thenReturn(Optional.of(user));
 
         AppException exception = assertThrows(AppException.class, () -> userService.register(signUpDto));
         assertEquals("Username already exists", exception.getMessage());
@@ -118,6 +121,8 @@ class UserServiceTests {
     
     @Test
     void followUser_SuccessfullyFollowsUser() {
+        String token = "Bearer faketoken";
+        when(authService.getUserFromToken(token)).thenReturn(detailedUserDto);
         User follower = new User();
         follower.setEmail("follower@example.com");
         follower.setFollowing(new ArrayList<>());
@@ -126,12 +131,13 @@ class UserServiceTests {
         followee.setId(UUID.randomUUID());
         followee.setEmail("followee@example.com");
 
-        when(userRepo.findByEmail("followee@example.com")).thenReturn(followee);
-        when(userRepo.findByEmail("follower@example.com")).thenReturn(follower);
+        when(userRepo.findByEmailIgnoreCase("followee@example.com")).thenReturn(followee);
+        when(userRepo.findByEmailIgnoreCase("follower@example.com")).thenReturn(follower);
 
         DetailedUserDto dto = new DetailedUserDto("follower", "follower@example.com");
+        when(authService.getUserFromToken(token)).thenReturn(dto);
 
-        userService.followUser("followee@example.com", dto);
+        userService.followUser("followee@example.com", token);
 
         assertTrue(follower.getFollowing().contains(followee));
         verify(userRepo).save(follower);
@@ -139,6 +145,8 @@ class UserServiceTests {
 
     @Test
     void followUser_AlreadyFollowing_ThrowsException() {
+        String token = "Bearer faketoken";
+        when(authService.getUserFromToken(token)).thenReturn(detailedUserDto);
         User followee = new User();
         followee.setId(UUID.randomUUID());
 
@@ -146,17 +154,20 @@ class UserServiceTests {
         follower.setEmail("follower@example.com");
         follower.setFollowing(new ArrayList<>(List.of(followee)));
 
-        when(userRepo.findByEmail("followee@example.com")).thenReturn(followee);
-        when(userRepo.findByEmail("follower@example.com")).thenReturn(follower);
+        when(userRepo.findByEmailIgnoreCase("followee@example.com")).thenReturn(followee);
+        when(userRepo.findByEmailIgnoreCase("follower@example.com")).thenReturn(follower);
 
         DetailedUserDto dto = new DetailedUserDto("follower", "follower@example.com");
+        when(authService.getUserFromToken(token)).thenReturn(dto);
 
-        AppException exception = assertThrows(AppException.class, () -> userService.followUser("followee@example.com", dto));
+        AppException exception = assertThrows(AppException.class, () -> userService.followUser("followee@example.com", token));
         assertEquals("Already following that user", exception.getMessage());
     }
 
     @Test
     void unFollowUser_SuccessfullyUnfollowsUser() {
+        String token = "Bearer faketoken";
+        when(authService.getUserFromToken(token)).thenReturn(detailedUserDto);
         User followee = new User();
         followee.setId(UUID.randomUUID());
         followee.setUserName("followee");
@@ -166,12 +177,13 @@ class UserServiceTests {
         follower.setUserName("follower");
         follower.setFollowing(new ArrayList<>(List.of(followee)));
 
-        when(userRepo.findByEmail("followee@example.com")).thenReturn(followee);
-        when(userRepo.findByEmail("follower@example.com")).thenReturn(follower);
+        when(userRepo.findByEmailIgnoreCase("followee@example.com")).thenReturn(followee);
+        when(userRepo.findByEmailIgnoreCase("follower@example.com")).thenReturn(follower);
 
         DetailedUserDto dto = new DetailedUserDto("follower", "follower@example.com");
+        when(authService.getUserFromToken(token)).thenReturn(dto);
 
-        userService.unFollowUser("followee@example.com", dto);
+        userService.unFollowUser("followee@example.com", token);
 
         assertFalse(follower.getFollowing().contains(followee));
         verify(userRepo).save(follower);
@@ -179,6 +191,8 @@ class UserServiceTests {
 
     @Test
     void unFollowUser_NotFollowing_ThrowsException() {
+        String token = "Bearer faketoken";
+        when(authService.getUserFromToken(token)).thenReturn(detailedUserDto);
         User followee = new User();
         followee.setId(UUID.randomUUID());
 
@@ -186,17 +200,20 @@ class UserServiceTests {
         follower.setEmail("follower@example.com");
         follower.setFollowing(new ArrayList<>());
 
-        when(userRepo.findByEmail("followee@example.com")).thenReturn(followee);
-        when(userRepo.findByEmail("follower@example.com")).thenReturn(follower);
+        when(userRepo.findByEmailIgnoreCase("followee@example.com")).thenReturn(followee);
+        when(userRepo.findByEmailIgnoreCase("follower@example.com")).thenReturn(follower);
 
         DetailedUserDto dto = new DetailedUserDto("follower", "follower@example.com");
+        when(authService.getUserFromToken(token)).thenReturn(dto);
 
-        AppException exception = assertThrows(AppException.class, () -> userService.unFollowUser("followee@example.com", dto));
+        AppException exception = assertThrows(AppException.class, () -> userService.unFollowUser("followee@example.com", token));
         assertEquals("Not following that user", exception.getMessage());
     }
 
     @Test
     void upvoteKvitter_SuccessfullyAddsUpvote() {
+        String token = "Bearer faketoken";
+        when(authService.getUserFromToken(token)).thenReturn(detailedUserDto);
         UUID kvitterId = UUID.randomUUID();
         Kvitter kvitter = new Kvitter();
         kvitter.setId(kvitterId);
@@ -206,11 +223,12 @@ class UserServiceTests {
         user.setLikes(new ArrayList<>());
 
         when(kvitterRepo.findById(kvitterId)).thenReturn(Optional.of(kvitter));
-        when(userRepo.findByEmail("user@example.com")).thenReturn(user);
+        when(userRepo.findByEmailIgnoreCase("user@example.com")).thenReturn(user);
 
         DetailedUserDto dto = new DetailedUserDto("user", "user@example.com");
+        when(authService.getUserFromToken(token)).thenReturn(dto);
 
-        userService.upvoteKvitter(kvitterId.toString(), dto);
+        userService.upvoteKvitter(kvitterId.toString(), token);
 
         assertTrue(user.getLikes().contains(kvitter));
         verify(userRepo).save(user);
@@ -218,6 +236,8 @@ class UserServiceTests {
 
     @Test
     void upvoteKvitter_AlreadyUpvoted_ThrowsException() {
+        String token = "Bearer faketoken";
+        when(authService.getUserFromToken(token)).thenReturn(detailedUserDto);
         UUID kvitterId = UUID.randomUUID();
         Kvitter kvitter = new Kvitter();
         kvitter.setId(kvitterId);
@@ -227,16 +247,19 @@ class UserServiceTests {
         user.setLikes(new ArrayList<>(List.of(kvitter)));
 
         when(kvitterRepo.findById(kvitterId)).thenReturn(Optional.of(kvitter));
-        when(userRepo.findByEmail("user@example.com")).thenReturn(user);
+        when(userRepo.findByEmailIgnoreCase("user@example.com")).thenReturn(user);
 
         DetailedUserDto dto = new DetailedUserDto("user", "user@example.com");
+        when(authService.getUserFromToken(token)).thenReturn(dto);
 
-        AppException exception = assertThrows(AppException.class, () -> userService.upvoteKvitter(kvitterId.toString(), dto));
+        AppException exception = assertThrows(AppException.class, () -> userService.upvoteKvitter(kvitterId.toString(), token));
         assertEquals("User already upvoted this kvitter", exception.getMessage());
     }
 
     @Test
     void removeUpvoteOnKvitter_SuccessfullyRemovesUpvote() {
+        String token = "Bearer faketoken";
+        when(authService.getUserFromToken(token)).thenReturn(detailedUserDto);
         UUID kvitterId = UUID.randomUUID();
         Kvitter kvitter = new Kvitter();
         kvitter.setId(kvitterId);
@@ -246,11 +269,12 @@ class UserServiceTests {
         user.setLikes(new ArrayList<>(List.of(kvitter)));
 
         when(kvitterRepo.findById(kvitterId)).thenReturn(Optional.of(kvitter));
-        when(userRepo.findByEmail("user@example.com")).thenReturn(user);
+        when(userRepo.findByEmailIgnoreCase("user@example.com")).thenReturn(user);
 
         DetailedUserDto dto = new DetailedUserDto("user", "user@example.com");
+        when(authService.getUserFromToken(token)).thenReturn(dto);
 
-        userService.removeUpvoteOnKvitter(kvitterId.toString(), dto);
+        userService.removeUpvoteOnKvitter(kvitterId.toString(), token);
 
         assertFalse(user.getLikes().contains(kvitter));
         verify(userRepo).save(user);
@@ -258,6 +282,7 @@ class UserServiceTests {
 
     @Test
     void removeUpvoteOnKvitter_NotUpvoted_ThrowsException() {
+        String token = "Bearer faketoken";
         UUID kvitterId = UUID.randomUUID();
         Kvitter kvitter = new Kvitter();
         kvitter.setId(kvitterId);
@@ -267,11 +292,12 @@ class UserServiceTests {
         user.setLikes(new ArrayList<>());
 
         when(kvitterRepo.findById(kvitterId)).thenReturn(Optional.of(kvitter));
-        when(userRepo.findByEmail("user@example.com")).thenReturn(user);
+        when(userRepo.findByEmailIgnoreCase("user@example.com")).thenReturn(user);
 
         DetailedUserDto dto = new DetailedUserDto("user", "user@example.com");
+        when(authService.getUserFromToken(token)).thenReturn(dto);
 
-        AppException exception = assertThrows(AppException.class, () -> userService.removeUpvoteOnKvitter(kvitterId.toString(), dto));
+        AppException exception = assertThrows(AppException.class, () -> userService.removeUpvoteOnKvitter(kvitterId.toString(), token));
         assertEquals("User hasn't upvoted this kvitter yet", exception.getMessage());
     }
 

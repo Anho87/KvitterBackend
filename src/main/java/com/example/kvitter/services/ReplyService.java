@@ -26,10 +26,12 @@ public class ReplyService {
     private final ReplyRepo replyRepo;
     private final UserRepo userRepo;
     private final KvitterRepo kvitterRepo;
+    private final AuthService authService;
 
 
    
-    public void addReply(String message, UUID kvitterId, UUID parentReplyId, DetailedUserDto detailedUserDto) {
+    public void addReply(String message, UUID kvitterId, UUID parentReplyId, String token) {
+        DetailedUserDto detailedUserDto = authService.getUserFromToken(token);
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Stockholm"));
         User user = userRepo.findById(detailedUserDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
@@ -55,7 +57,8 @@ public class ReplyService {
     }
 
     
-    public void removeReply(String id) {
+    public void removeReply(String id, String token) {
+        authService.getUserFromToken(token);
         UUID uuid = UUID.fromString(id);
         Reply reply = replyRepo.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Reply not found"));

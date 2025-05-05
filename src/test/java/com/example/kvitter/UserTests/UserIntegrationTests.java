@@ -54,7 +54,7 @@ public class UserIntegrationTests {
     @Test
     @Transactional
     void testFindByEmail() {
-        User foundUser = userRepo.findByEmail(testUser.getEmail());
+        User foundUser = userRepo.findByEmailIgnoreCase(testUser.getEmail());
 
         assertThat(foundUser).isNotNull();
         assertThat(foundUser.getUserName()).isEqualTo("testuser");
@@ -65,7 +65,7 @@ public class UserIntegrationTests {
     @Test
     @Transactional
     void testFindByUserName() {
-        Optional<User> foundUser = userRepo.findByUserName(testUser.getUserName());
+        Optional<User> foundUser = userRepo.findByUserNameIgnoreCase(testUser.getUserName());
 
         assertThat(foundUser).isPresent();
         assertThat(foundUser.get().getUserName()).isEqualTo("testuser");

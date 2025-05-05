@@ -52,7 +52,7 @@ class RekvittControllerTest {
 
         rekvittController.postRekvitt(request, token);
 
-        verify(rekvittService).addRekvitt(eq(request.kvitterId()), eq(detailedUserDto));
+        verify(rekvittService).addRekvitt(eq(request.kvitterId()), eq(token));
     }
 
     @Test
@@ -65,7 +65,7 @@ class RekvittControllerTest {
 
         rekvittController.removeRekvitt(request, token);
 
-        verify(rekvittService).removeRekvitt(eq(request.rekvittId()));
+        verify(rekvittService).removeRekvitt(eq(request.rekvittId()), eq(token));
     }
 }
 
