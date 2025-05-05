@@ -1,13 +1,10 @@
 package com.example.kvitter.controllers;
 
 
-import com.example.kvitter.configs.UserAuthProvider;
 import com.example.kvitter.dtos.*;
-import com.example.kvitter.exceptions.ExpiredTokenException;
 import com.example.kvitter.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;

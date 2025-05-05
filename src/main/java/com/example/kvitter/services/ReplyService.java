@@ -1,7 +1,6 @@
 package com.example.kvitter.services;
 
 import com.example.kvitter.dtos.DetailedUserDto;
-import com.example.kvitter.entities.Hashtag;
 import com.example.kvitter.entities.Kvitter;
 import com.example.kvitter.entities.Reply;
 import com.example.kvitter.entities.User;
@@ -13,10 +12,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service

@@ -108,7 +108,7 @@ public class RekvittServiceTests {
 
         AppException ex = assertThrows(AppException.class, () ->
                 rekvittService.addRekvitt(kvitterId.toString(), token));
-        assertEquals("User already rekvitted this kvitter", ex.getMessage());
+        assertEquals("You have already rekvitted this kvitter!", ex.getMessage());
     }
 
     @Test

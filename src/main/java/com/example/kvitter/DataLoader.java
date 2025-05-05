@@ -4,7 +4,6 @@ import com.example.kvitter.dtos.DetailedUserDto;
 import com.example.kvitter.dtos.SignUpDto;
 import com.example.kvitter.entities.Hashtag;
 import com.example.kvitter.entities.Kvitter;
-import com.example.kvitter.entities.User;
 import com.example.kvitter.mappers.UserMapper;
 import com.example.kvitter.repos.KvitterRepo;
 import com.example.kvitter.services.HashtagService;
@@ -16,7 +15,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.nio.CharBuffer;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 

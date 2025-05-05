@@ -1,6 +1,5 @@
 package com.example.kvitter.repos;
 
-import com.example.kvitter.entities.Kvitter;
 import com.example.kvitter.entities.Reply;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

@@ -1,14 +1,10 @@
 package com.example.kvitter.services;
 
-import com.example.kvitter.configs.UserAuthProvider;
-import com.example.kvitter.dtos.DetailedHashtagDto;
-import com.example.kvitter.dtos.DetailedUserDto;
 import com.example.kvitter.dtos.MiniHashtagDto;
 import com.example.kvitter.entities.Hashtag;
 import com.example.kvitter.mappers.HashtagMapper;
 import com.example.kvitter.repos.HashtagRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;

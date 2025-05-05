@@ -3,11 +3,10 @@ package com.example.kvitter.HashtagTests;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.example.kvitter.configs.UserAuthProvider;
+
 import com.example.kvitter.dtos.DetailedUserDto;
 import com.example.kvitter.dtos.MiniHashtagDto;
 import com.example.kvitter.entities.Hashtag;
-import com.example.kvitter.entities.Kvitter;
 import com.example.kvitter.entities.User;
 import com.example.kvitter.mappers.HashtagMapper;
 import com.example.kvitter.repos.HashtagRepo;
@@ -16,11 +15,8 @@ import com.example.kvitter.services.HashtagService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.Authentication;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;

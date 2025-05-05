@@ -1,6 +1,6 @@
 package com.example.kvitter.KvitterTests;
 
-import com.example.kvitter.configs.UserAuthProvider;
+
 import com.example.kvitter.controllers.KvitterController;
 import com.example.kvitter.dtos.*;
 import com.example.kvitter.services.KvitterService;
@@ -11,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 
 import java.util.ArrayList;
 import java.util.List;
