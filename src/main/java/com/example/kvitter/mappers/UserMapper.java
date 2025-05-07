@@ -1,6 +1,7 @@
 package com.example.kvitter.mappers;
 
 import com.example.kvitter.dtos.DetailedUserDto;
+import com.example.kvitter.dtos.MiniUserDto;
 import com.example.kvitter.dtos.SignUpDto;
 import com.example.kvitter.entities.User;
 import org.mapstruct.AfterMapping;
@@ -28,6 +29,11 @@ public interface UserMapper {
     @Mapping(source = "kvitterList", target = "kvitterList")
     @Mapping(source = "likes", target = "likes")
     User detailedUserDTOToUser(DetailedUserDto detailedUserDto);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "email", target = "email")
+    @Mapping(source = "userName", target = "userName")
+    MiniUserDto userToMiniUserDto(User user);
     
     @Mapping(target = "password", ignore = true)
     User signUpToUser(SignUpDto signUpDto);

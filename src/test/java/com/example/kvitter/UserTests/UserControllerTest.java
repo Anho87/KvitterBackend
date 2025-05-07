@@ -2,8 +2,10 @@ package com.example.kvitter.UserTests;
 
 import com.example.kvitter.configs.UserAuthProvider;
 import com.example.kvitter.controllers.UserController;
+import com.example.kvitter.dtos.DetailedDtoInterface;
 import com.example.kvitter.dtos.DetailedUserDto;
 import com.example.kvitter.dtos.FollowUserRequestDto;
+import com.example.kvitter.dtos.MiniUserDto;
 import com.example.kvitter.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,18 +14,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.Authentication;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 class UserControllerTest {
 
     @Mock
     private UserService userService;
-
-    @Mock
-    private UserAuthProvider userAuthProvider;
-
-    @Mock
-    private Authentication authentication;
 
     @InjectMocks
     private UserController userController;
@@ -40,15 +40,33 @@ class UserControllerTest {
     }
 
     @Test
+    void testGetUserInfo(){
+        String token = "Bearer faketoken";
+        String userName = detailedUserDto.getUserName();
+        
+        when(userService.getUserInfo(userName, token)).thenReturn(detailedUserDto);
+        DetailedUserDto result = userController.getUserInfo(userName, token);
+        
+        assertThat(result).isEqualTo(detailedUserDto);
+    }
+    @Test
+    void testGetUserFollowing(){
+        String token = "Bearer faketoken";
+        List<MiniUserDto> mockResult = new ArrayList<>();
+        when(userService.getUserFollowing(token)).thenReturn(mockResult);
+        
+        List<MiniUserDto> result = userController.getUserFollowing(token);
+        
+        assertThat(result).isEqualTo(mockResult);
+        verify(userService).getUserFollowing(token);
+    }
+    @Test
     void testFollowUser() {
         FollowUserRequestDto request = new FollowUserRequestDto("targetuser@example.com");
         String token = "Bearer faketoken";
-
-        when(userAuthProvider.validateTokenStrongly("faketoken")).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(detailedUserDto);
+        
 
         userController.followUser(request, token);
-
         verify(userService).followUser(eq("targetuser@example.com"), eq(token));
     }
 
@@ -56,9 +74,7 @@ class UserControllerTest {
     void testUnFollowUser() {
         var request = new com.example.kvitter.dtos.UnFollowUserRequestDto("targetuser@example.com");
         String token = "Bearer faketoken";
-
-        when(userAuthProvider.validateTokenStrongly("faketoken")).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(detailedUserDto);
+        
 
         userController.unFollowUser(request, token);
 
@@ -69,10 +85,7 @@ class UserControllerTest {
     void testUpvoteKvitter() {
         var request = new com.example.kvitter.dtos.UpvoteKvitterRequestDto("kvitterId123");
         String token = "Bearer faketoken";
-
-        when(userAuthProvider.validateToken("faketoken")).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(detailedUserDto);
-
+        
         userController.upvoteKvitter(request, token);
 
         verify(userService).upvoteKvitter(eq("kvitterId123"), eq(token));
@@ -82,10 +95,7 @@ class UserControllerTest {
     void testRemoveUpvoteOnKvitter() {
         var request = new com.example.kvitter.dtos.RemoveUpvoteOnKvitterRequestDto("kvitterId123");
         String token = "Bearer faketoken";
-
-        when(userAuthProvider.validateToken("faketoken")).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(detailedUserDto);
-
+        
         userController.removeUpvoteOnKvitter(request, token);
 
         verify(userService).removeUpvoteOnKvitter(eq("kvitterId123"), eq(token));

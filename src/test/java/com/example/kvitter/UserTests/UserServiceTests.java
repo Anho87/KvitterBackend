@@ -68,6 +68,41 @@ class UserServiceTests {
     }
 
     @Test
+    void getUserInfo_Test() {
+        String token = "Bearer faketoken";
+        String userName = "testuser";
+
+        Optional<User> optionalUser = Optional.of(user);
+        when(userRepo.findByUserNameIgnoreCase(userName)).thenReturn(optionalUser);
+        when(userMapper.optionalToDetailedUserDto(optionalUser)).thenReturn(detailedUserDto);
+
+        DetailedUserDto result = userService.getUserInfo(userName, token);
+
+        assertNotNull(result);
+        assertEquals(detailedUserDto.getUserName(), result.getUserName());
+        verify(authService).getUserFromToken(token);
+        verify(userRepo).findByUserNameIgnoreCase(userName);
+        verify(userMapper).optionalToDetailedUserDto(optionalUser);
+    }
+    @Test
+    void getUserFollowingList_Test(){
+        String token = "Bearer faketoken";
+        User follower = new User();
+        follower.setId(UUID.randomUUID());
+        follower.setUserName("follower");
+        follower.setEmail("follower@example.com");
+        follower.setFollowing(new ArrayList<>());
+        
+        User followee = new User();
+        followee.setId(UUID.randomUUID());
+        followee.setUserName("followee");
+        followee.setEmail("followee@example.com");
+
+        follower.setFollowing(new ArrayList<>(List.of(followee)));
+        
+        assertEquals(1,follower.getFollowing().size());
+    }
+    @Test
     void login_ValidCredentials_ReturnsUser() {
         when(userRepo.findByUserNameIgnoreCase(credentialsDto.userName())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(CharBuffer.wrap(credentialsDto.password()), user.getPassword())).thenReturn(true);

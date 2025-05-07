@@ -1,6 +1,7 @@
 package com.example.kvitter.services;
 
 import com.example.kvitter.dtos.CredentialsDto;
+import com.example.kvitter.dtos.MiniUserDto;
 import com.example.kvitter.dtos.SignUpDto;
 import com.example.kvitter.dtos.DetailedUserDto;
 import com.example.kvitter.entities.Kvitter;
@@ -18,8 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -122,6 +125,17 @@ public class UserService {
         }else {
             throw new AppException("User hasn't upvoted this kvitter yet", HttpStatus.BAD_REQUEST);
         }
+    }
+    
+    public List<MiniUserDto> getUserFollowing(String token){
+        DetailedUserDto detailedUserDto = authService.getUserFromToken(token);
+        User user = userRepo.findByEmailIgnoreCase(detailedUserDto.getEmail());
+        return user.getFollowing().stream().map(userMapper::userToMiniUserDto).collect(Collectors.toList());
+    }
+    
+    public DetailedUserDto getUserInfo(String userName, String token){
+        authService.getUserFromToken(token);
+        return userMapper.optionalToDetailedUserDto(userRepo.findByUserNameIgnoreCase(userName));
     }
     
 }

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 
@@ -41,6 +42,15 @@ public class UserController {
     public ResponseEntity<Map<String, String>> removeUpvoteOnKvitter(@RequestBody RemoveUpvoteOnKvitterRequestDto request, @RequestHeader("Authorization") String token) {
         userService.removeUpvoteOnKvitter(request.kvitterId(), token);
         return ResponseEntity.ok(Collections.singletonMap("message", "Upvote removed!"));
-
+    }
+    
+    @GetMapping("/getUserFollowing")
+    public List<MiniUserDto> getUserFollowing(@RequestHeader("Authorization") String token){
+        return userService.getUserFollowing(token);
+    }
+    
+    @GetMapping("/getUserInfo")
+    public DetailedUserDto getUserInfo(@RequestParam String userName, @RequestHeader("Authorization") String token){
+        return userService.getUserInfo(userName, token);
     }
 }
