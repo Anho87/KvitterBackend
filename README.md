@@ -39,4 +39,4 @@ PostgreSQL: All user data and application-related content, including Kvitters an
 # Live Demo
 Kvitter is hosted and available for use at the following link:
 
-### 🌐 Visit Kvitter
+### [🌐 Visit Kvitter](https://ah-kvitter.web.app/welcome)
