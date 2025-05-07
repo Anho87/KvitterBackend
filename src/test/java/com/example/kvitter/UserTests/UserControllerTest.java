@@ -1,8 +1,6 @@
 package com.example.kvitter.UserTests;
 
-import com.example.kvitter.configs.UserAuthProvider;
 import com.example.kvitter.controllers.UserController;
-import com.example.kvitter.dtos.DetailedDtoInterface;
 import com.example.kvitter.dtos.DetailedUserDto;
 import com.example.kvitter.dtos.FollowUserRequestDto;
 import com.example.kvitter.dtos.MiniUserDto;
@@ -12,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.Authentication;
 
 import java.util.ArrayList;
 import java.util.List;
