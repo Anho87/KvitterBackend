@@ -58,14 +58,10 @@ class RekvittControllerTest {
     @Test
     void testRemoveRekvitt() {
         RemoveRekvittRequestDto request = new RemoveRekvittRequestDto(UUID.randomUUID().toString());
-        String token = "Bearer faketoken";
+        
+        rekvittController.removeRekvitt(request);
 
-        when(userAuthProvider.validateTokenStrongly("faketoken")).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(detailedUserDto);
-
-        rekvittController.removeRekvitt(request, token);
-
-        verify(rekvittService).removeRekvitt(eq(request.rekvittId()), eq(token));
+        verify(rekvittService).removeRekvitt(eq(request.rekvittId()));
     }
 }
 

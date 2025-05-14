@@ -24,8 +24,8 @@ public class KvitterController {
     }
 
     @DeleteMapping("/removeKvitter")
-    public ResponseEntity<Map<String, String>> removeKvitter(@RequestBody RemoveKvitterRequest request, @RequestHeader("Authorization") String token) {
-        kvitterService.removeKvitter(request.id(), token);
+    public ResponseEntity<Map<String, String>> removeKvitter(@RequestBody RemoveKvitterRequest request) {
+        kvitterService.removeKvitter(request.id());
         return ResponseEntity.ok(Collections.singletonMap("message", "Kvitter deleted!"));
     }
 

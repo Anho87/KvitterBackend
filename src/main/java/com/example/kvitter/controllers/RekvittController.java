@@ -24,8 +24,8 @@ public class RekvittController {
     }
     
     @DeleteMapping("/removeRekvitt")
-    public ResponseEntity<Map<String, String>> removeRekvitt(@RequestBody RemoveRekvittRequestDto request, @RequestHeader("Authorization") String token) {
-        rekvittService.removeRekvitt(request.rekvittId(), token);
+    public ResponseEntity<Map<String, String>> removeRekvitt(@RequestBody RemoveRekvittRequestDto request) {
+        rekvittService.removeRekvitt(request.rekvittId());
         return ResponseEntity.ok(Collections.singletonMap("message", "Rekvitt deleted!"));
     }
 }

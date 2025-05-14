@@ -59,8 +59,7 @@ public class RekvittService {
         }
     }
 
-    public void removeRekvitt(String rekvittId, String token) {
-        authService.getUserFromToken(token);
+    public void removeRekvitt(String rekvittId) {
         UUID uuid = UUID.fromString(rekvittId);
         Rekvitt rekvitt = rekvittRepo.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Rekvitt not found"));

@@ -45,15 +45,12 @@ class HashtagControllerTest {
 
     @Test
     void testGetTrendingHashtags() {
-        String token = "Bearer faketoken";
+ 
+        when(hashtagService.getTrendingHashtags()).thenReturn(List.of());
 
-        when(userAuthProvider.validateToken("faketoken")).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(detailedUserDto);
-        when(hashtagService.getTrendingHashtags(token)).thenReturn(List.of());
-
-        List<MiniHashtagDto> result = hashtagController.getTrendingHashtags(token);
+        List<MiniHashtagDto> result = hashtagController.getTrendingHashtags();
 
         assertThat(result).isNotNull();
-        verify(hashtagService).getTrendingHashtags(token);
+        verify(hashtagService).getTrendingHashtags();
     }
 }

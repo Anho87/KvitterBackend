@@ -54,8 +54,7 @@ public class ReplyService {
     }
 
     
-    public void removeReply(String id, String token) {
-        authService.getUserFromToken(token);
+    public void removeReply(String id) {
         UUID uuid = UUID.fromString(id);
         Reply reply = replyRepo.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Reply not found"));

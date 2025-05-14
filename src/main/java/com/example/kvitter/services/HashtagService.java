@@ -30,8 +30,7 @@ public class HashtagService {
     }
     
    
-    public List<MiniHashtagDto> getTrendingHashtags(String token){
-        authService.getUserFromToken(token);
+    public List<MiniHashtagDto> getTrendingHashtags(){
         return mapHashtags(hashtagRepo.getFiveLastHashTags());
     }
     

@@ -23,8 +23,8 @@ public class ReplyController {
     }
 
     @DeleteMapping("/removeReply")
-    public ResponseEntity<Map<String, String>> removeReply(@RequestBody RemoveKvitterRequest request, @RequestHeader("Authorization") String token) {
-            replyService.removeReply(request.id(), token);
+    public ResponseEntity<Map<String, String>> removeReply(@RequestBody RemoveKvitterRequest request) {
+            replyService.removeReply(request.id());
         return ResponseEntity.ok(Collections.singletonMap("message", "Reply deleted!"));
     }
 }

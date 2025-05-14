@@ -59,12 +59,10 @@ class KvitterControllerTest {
     @Test
     void testRemoveKvitter() {
         RemoveKvitterRequest request = new RemoveKvitterRequest(UUID.randomUUID().toString());
-        String token = "Bearer faketoken";
         
+        ResponseEntity<Map<String, String>> response = kvitterController.removeKvitter(request);
 
-        ResponseEntity<Map<String, String>> response = kvitterController.removeKvitter(request, token);
-
-        verify(kvitterService).removeKvitter(eq(request.id()), eq(token));
+        verify(kvitterService).removeKvitter(eq(request.id()));
         assertThat(response.getBody()).containsEntry("message", "Kvitter deleted!");
     }
 

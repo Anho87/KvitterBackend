@@ -133,8 +133,7 @@ public class UserService {
         return user.getFollowing().stream().map(userMapper::userToMiniUserDto).collect(Collectors.toList());
     }
     
-    public DetailedUserDto getUserInfo(String userName, String token){
-        authService.getUserFromToken(token);
+    public DetailedUserDto getUserInfo(String userName){
         return userMapper.optionalToDetailedUserDto(userRepo.findByUserNameIgnoreCase(userName));
     }
     

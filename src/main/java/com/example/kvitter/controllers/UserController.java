@@ -50,7 +50,7 @@ public class UserController {
     }
     
     @GetMapping("/getUserInfo")
-    public DetailedUserDto getUserInfo(@RequestParam String userName, @RequestHeader("Authorization") String token){
-        return userService.getUserInfo(userName, token);
+    public DetailedUserDto getUserInfo(@RequestParam String userName){
+        return userService.getUserInfo(userName);
     }
 }

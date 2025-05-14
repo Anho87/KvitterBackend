@@ -119,21 +119,19 @@ public class ReplyServiceTests {
 
     @Test
     void testRemoveReply_NoReplies_Delete() {
-        String token = "Bearer faketoken";
         Reply reply = new Reply();
         reply.setId(replyId);
         reply.setReplies(Collections.emptyList());
 
         when(replyRepo.findById(replyId)).thenReturn(Optional.of(reply));
 
-        replyService.removeReply(replyId.toString(), token);
+        replyService.removeReply(replyId.toString());
 
         verify(replyRepo).deleteReplyById(replyId);
     }
 
     @Test
     void testRemoveReply_WithReplies_SoftDelete() {
-        String token = "Bearer faketoken";
         Reply reply = new Reply();
         reply.setId(replyId);
         reply.setMessage("Original Message");
@@ -142,7 +140,7 @@ public class ReplyServiceTests {
 
         when(replyRepo.findById(replyId)).thenReturn(Optional.of(reply));
 
-        replyService.removeReply(replyId.toString(), token);
+        replyService.removeReply(replyId.toString());
 
         assertFalse(reply.getIsActive());
         assertEquals("Deleted...", reply.getMessage());
@@ -151,10 +149,9 @@ public class ReplyServiceTests {
 
     @Test
     void testRemoveReply_NotFound() {
-        String token = "Bearer faketoken";
         when(replyRepo.findById(replyId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () ->
-                replyService.removeReply(replyId.toString(), token));
+                replyService.removeReply(replyId.toString()));
     }
 }

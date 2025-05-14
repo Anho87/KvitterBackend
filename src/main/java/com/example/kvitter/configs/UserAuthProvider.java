@@ -60,6 +60,10 @@ public class UserAuthProvider {
         JWTVerifier verifier = JWT.require(algorithm).build();
         
         DecodedJWT decoded = verifier.verify(token);
+
+        if (decoded.getExpiresAt().before(new Date())) {
+            throw new ExpiredTokenException("Access token expired");
+        }
         
         DetailedUserDto user = DetailedUserDto.builder()
                 .userName(decoded.getIssuer())

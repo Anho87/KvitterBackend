@@ -108,23 +108,21 @@ class KvitterServiceTests {
 
     @Test
     void testRemoveKvitter_DeletesCompletely() {
-        String token = "Bearer faketoken";
         kvitter.setReplies(Collections.emptyList());
         kvitter.setRekvitts(Collections.emptyList());
         when(kvitterRepo.findById(any())).thenReturn(Optional.of(kvitter));
 
-        kvitterService.removeKvitter(kvitter.getId().toString(), token);
+        kvitterService.removeKvitter(kvitter.getId().toString());
 
         verify(kvitterRepo).deleteKvitterById(eq(kvitter.getId()));
     }
 
     @Test
     void testRemoveKvitter_MarksAsDeleted() {
-        String token = "Bearer faketoken";
         kvitter.setReplies(List.of(mock(Reply.class))); 
         when(kvitterRepo.findById(any())).thenReturn(Optional.of(kvitter));
 
-        kvitterService.removeKvitter(kvitter.getId().toString(), token);
+        kvitterService.removeKvitter(kvitter.getId().toString());
 
         assertFalse(kvitter.getIsActive());
         assertEquals("Deleted...", kvitter.getMessage());

@@ -69,18 +69,16 @@ class UserServiceTests {
 
     @Test
     void getUserInfo_Test() {
-        String token = "Bearer faketoken";
         String userName = "testuser";
 
         Optional<User> optionalUser = Optional.of(user);
         when(userRepo.findByUserNameIgnoreCase(userName)).thenReturn(optionalUser);
         when(userMapper.optionalToDetailedUserDto(optionalUser)).thenReturn(detailedUserDto);
 
-        DetailedUserDto result = userService.getUserInfo(userName, token);
+        DetailedUserDto result = userService.getUserInfo(userName);
 
         assertNotNull(result);
         assertEquals(detailedUserDto.getUserName(), result.getUserName());
-        verify(authService).getUserFromToken(token);
         verify(userRepo).findByUserNameIgnoreCase(userName);
         verify(userMapper).optionalToDetailedUserDto(optionalUser);
     }

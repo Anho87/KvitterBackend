@@ -74,12 +74,10 @@ class HashtagServiceTests {
 
     @Test
     void testGetTrendingHashtags() {
-        String token = "Bearer faketoken";
-        when(authService.getUserFromToken(token)).thenReturn(detailedUserDto);
         when(hashtagRepo.getFiveLastHashTags()).thenReturn(List.of(hashtag));
         when(hashtagMapper.hashtagToMiniHashtagDto(hashtag)).thenReturn(miniHashtagDto);
 
-        List<MiniHashtagDto> result = hashtagService.getTrendingHashtags(token);
+        List<MiniHashtagDto> result = hashtagService.getTrendingHashtags();
 
         assertEquals(1, result.size());
         assertEquals(result.get(0).getHashtag(), "#test");

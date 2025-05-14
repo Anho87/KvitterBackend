@@ -113,25 +113,20 @@ public class RekvittServiceTests {
 
     @Test
     void testRemoveRekvitt_Success() {
-        String token = "Bearer faketoken";
-        when(authService.getUserFromToken(token)).thenReturn(detailedUserDto);
-        
         when(rekvittRepo.findById(rekvittId)).thenReturn(Optional.of(rekvitt));
 
-        rekvittService.removeRekvitt(rekvittId.toString(), token);
+        rekvittService.removeRekvitt(rekvittId.toString());
 
         verify(rekvittRepo, times(1)).deleteRekvittByById(rekvittId);
     }
 
     @Test
     void testRemoveRekvitt_NotFound() {
-        String token = "Bearer faketoken";
-        when(authService.getUserFromToken(token)).thenReturn(detailedUserDto);
         
         when(rekvittRepo.findById(rekvittId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () ->
-                rekvittService.removeRekvitt(rekvittId.toString(), token));
+                rekvittService.removeRekvitt(rekvittId.toString()));
     }
 
     @Test

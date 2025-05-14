@@ -38,11 +38,10 @@ class UserControllerTest {
 
     @Test
     void testGetUserInfo(){
-        String token = "Bearer faketoken";
         String userName = detailedUserDto.getUserName();
         
-        when(userService.getUserInfo(userName, token)).thenReturn(detailedUserDto);
-        DetailedUserDto result = userController.getUserInfo(userName, token);
+        when(userService.getUserInfo(userName)).thenReturn(detailedUserDto);
+        DetailedUserDto result = userController.getUserInfo(userName);
         
         assertThat(result).isEqualTo(detailedUserDto);
     }

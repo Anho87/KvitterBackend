@@ -54,8 +54,7 @@ public class KvitterService {
         kvitterRepo.save(kvitter);
     }
 
-    public void removeKvitter(String id, String token) {
-        authService.getUserFromToken(token);
+    public void removeKvitter(String id) {
         UUID uuid = UUID.fromString(id);
         Kvitter kvitter = kvitterRepo.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Kvitter not found"));
