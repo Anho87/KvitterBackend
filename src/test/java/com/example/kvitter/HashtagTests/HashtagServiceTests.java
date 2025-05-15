@@ -10,7 +10,6 @@ import com.example.kvitter.entities.Hashtag;
 import com.example.kvitter.entities.User;
 import com.example.kvitter.mappers.HashtagMapper;
 import com.example.kvitter.repos.HashtagRepo;
-import com.example.kvitter.services.AuthService;
 import com.example.kvitter.services.HashtagService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,8 +29,6 @@ class HashtagServiceTests {
     
     @Mock
     private HashtagMapper hashtagMapper;
-    @Mock
-    private AuthService authService;
 
     @InjectMocks
     private HashtagService hashtagService;

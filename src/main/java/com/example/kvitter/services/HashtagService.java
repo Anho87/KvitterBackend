@@ -19,13 +19,12 @@ public class HashtagService {
     
     private final HashtagRepo hashtagRepo;
     private final HashtagMapper hashtagMapper;
-    private final AuthService authService;
 
 
 
     public Hashtag addHashTag(String hashtag) {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Stockholm"));
-        Hashtag newHashtag = new Hashtag(hashtag,now.toLocalDateTime());
+        Hashtag newHashtag = new Hashtag(hashtag.toLowerCase(),now.toLocalDateTime());
         return hashtagRepo.save(newHashtag);
     }
     
