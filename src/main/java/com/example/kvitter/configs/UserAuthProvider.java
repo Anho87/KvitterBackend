@@ -44,7 +44,6 @@ public class UserAuthProvider {
         Date now = new Date();
         long oneHour = 60 * 60 * 1000L;
         Date validity = new Date(now.getTime() + oneHour);
-//        Date validity = new Date(now.getTime() + 1000);
         return JWT.create()
                 .withIssuer(detailedUserDto.getUserName())
                 .withIssuedAt(now)
