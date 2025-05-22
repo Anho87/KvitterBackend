@@ -32,7 +32,7 @@ public class UserAuthProvider {
     private final UserRepo userRepo;
     private final UserMapper userMapper;
     
-    @Value("${security.jwt.token.secret-key:secret-key")
+    @Value("${security.jwt.token.secret-key:secret-key}")
     private String secretKey;
     
     @PostConstruct
@@ -41,6 +41,7 @@ public class UserAuthProvider {
     }
     
     public  String createToken(DetailedUserDto detailedUserDto){
+        System.out.println("Secret key: " + secretKey);
         Date now = new Date();
         long oneHour = 60 * 60 * 1000L;
         Date validity = new Date(now.getTime() + oneHour);
