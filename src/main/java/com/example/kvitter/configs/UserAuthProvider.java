@@ -41,7 +41,6 @@ public class UserAuthProvider {
     }
     
     public  String createToken(DetailedUserDto detailedUserDto){
-        System.out.println("Secret key: " + secretKey);
         Date now = new Date();
         long oneHour = 60 * 60 * 1000L;
         Date validity = new Date(now.getTime() + oneHour);
